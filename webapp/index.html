@@ -1,99 +1,66 @@
 <!-- Author: Norwin Roosen (408 018) (n_roos02@wwu.de)-->
 <!-- Date:   150822 -->
+
 <!DOCTYPE html>
 <html lang="en">
 
   <head>
+    <title>my journey journal - Home</title>
+    <meta name="author" content="Norwin Roosen">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Norwin Roosen">
 
-    <title>Reisetagebuch</title>
-
-
-
-    <!-- library includes -->
-    <script type="text/javascript" src="lib/js/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="lib/js/bootstrap.min.js"></script>
-    <script src="lib/js/leaflet.js"></script>
-    <script src="lib/js/leaflet.draw.js"></script>
-    <script src="lib/js/leaflet-routing-machine.js"></script>
-    <script src="lib/js/jsnlog.min.js"></script>
-
-    <!-- custom scripts -->
-    <script type="text/javascript" src="js/mapInit.js" defer=true></script>
-    <script type="text/javascript" src="js/mapDraw.js" defer=true></script>
-    <script type="text/javascript" src="js/mapRoute.js" defer=true></script>
-    <script type="text/javascript" src="js/mapFunctions.js" defer=true></script>
-    <script type="text/javascript" src="js/mapIO.js"></script>
-    <script type="text/javascript" src="js/txtToGeoJSONParser.js"></script>
-
-    <!-- style definition for the map (height) -->
     <style>
-      body { padding: 0px; }
-      html, body, #map { height: 100%; width: 100%; }
+      body {
+        margin: 0;
+        text-align: center;
+        font: 16pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        background: #000000 url("img/watercolor.jpg") ;
+      }
+      .boxed {
+        margin-top: 25px;
+        background: rgba(0, 0, 0, 0.1);
+      }
+      .boxed>*{
+        margin-bottom: 15px;
+      }
+      p {
+        padding: 15px;
+      }
+      h1 {
+        text-shadow: 2px 6px 17px #000000;
+      } 
     </style>
 
-    <link rel="stylesheet" href="lib/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="lib/css/leaflet.css"/>
-    <link rel="stylesheet" href="lib/css/leaflet.draw.css"/>
-    <link rel="stylesheet" href="lib/css/leaflet-routing-machine.css"/>
-
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
   </head>
 
-  <body id="body">
-            
-        <!-- column for content -->
-        <div class="col-md-6">
-          <!--  contains the map -->
-          <div id="map"></div>
-        </div>
-          
-          
-                
-        <div class="col-md-6">
+  <body>
+    <h1>my journey journal</h1>
 
-            <!-- form to save and load routes from the DB -->     
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <a class="text-muted" data-toggle="collapse" data-target="#dbRouteForm">
-                  <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-                  Route Database
-                </a>
-              </div>
+    <div class="boxed">
+      <p>Select a saved journey below, or create a new one to start!</p>
 
-              <div class="panel-body panel-collapse collapse in" id="dbRouteForm">
-                <p>
-                  Save the current route to the database, or load all stored routes from it.<br>
-                  When you save a route, you will receive a permalink to it.
-                </p>
-                <div class="btn-group">
-                  <button class="btn btn-default" type="button" onclick='saveRouteToDB()'>
-                    <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-                    save route to DB
-                  </button>
-                  <button class="btn btn-default" type="button" onclick='loadAllRoutesFromDB()'>
-                    <span class="glyphicon glyphicon-floppy-open" aria-hidden="true"></span>
-                    load routes from DB
-                  </button>
-                </div>
+      <input  id="newJourneyTxt" placeholder="name.." type="text"/>
+      <button id="newJourneyBtn" onclick="location.href='./map.html'">create new journey!</button>
+    </div>
 
-                <table id="tableRouteDB" class="table table-hover table-condensed hidden">
-                  <thead>
-                    <tr>
-                      <td ><b>#</b></td>
-                      <td><b>Date Inserted</b></td>
-                      <td><b>database ID</b></td>
-                    </tr>
-                  </thead>
-                  <tbody id="tableRouteDBContents"></tbody>
-                </table>
-              </div><!-- /panel body -->
-            </div>
+    <div class="boxed">
+      <table id="journeysTbl" align="center" class="table table-hover table-condensed hidden">
+        <thead>
+          <tr>
+            <td ><b>#</b></td>
+            <td><b>Name</b></td>
+          </tr>
+        </thead>
+        <tbody id="journeysTblBody"></tbody>
+      </table>
+    </div>
 
-        </div> <!-- /content column -->
-
+    <script type="text/javascript">
+    /* load all stored journeys */
+    </script>
 
   </body>
 

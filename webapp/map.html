@@ -1,0 +1,82 @@
+<!-- Author: Norwin Roosen (408 018) (n_roos02@wwu.de)-->
+<!-- Date:   150822 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+      <title>my journey journal</title>
+      <meta name="author" content="Norwin Roosen">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<head>
+
+    <link rel="stylesheet" href="lib/css/leaflet.draw.css"/>
+    <link rel="stylesheet" href="lib/css/leaflet-routing-machine.css"/>
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="stylesheet" href="lib/css/leaflet-sidebar.min.css" />
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <ul class="sidebar-tabs" role="tablist">
+            <li><a href="#home"     role="tab"><i class="fa fa-bars">    </i></a></li>
+            <li><a href="#profile"  role="tab"><i class="fa fa-user">    </i></a></li>
+            <li><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+            <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content active">
+            <div class="sidebar-pane" id="home">
+                <h1>sidebar-v2</h1>
+
+                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+            </div>
+            <div class="sidebar-pane" id="profile"><h1>Profile</h1></div>
+            <div class="sidebar-pane" id="messages"><h1>Messages</h1></div>
+            <div class="sidebar-pane" id="settings"><h1>Settings</h1></div>
+        </div>
+    </div>
+
+    <div id="map" class="sidebar-map"></div>
+
+    <!-- library includes -->
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+
+    <script type="text/javascript" src="lib/js/jquery-1.11.3.min.js"></script>
+    <script src="lib/js/leaflet-routing-machine.js"></script>
+    <script src="lib/js/jsnlog.min.js"></script>
+    <script src="lib/js/leaflet-sidebar.min.js"></script>
+
+    <!-- custom scripts -->
+    <script type="text/javascript" src="js/mapInit.js" defer=true></script>
+
+    <script type="text/javascript" src="js/mapDraw.js" defer=true></script>
+    <script type="text/javascript" src="js/mapRoute.js" defer=true></script>
+    <script type="text/javascript" src="js/mapFunctions.js" defer=true></script>
+    <script type="text/javascript" src="js/mapIO.js"></script>
+
+    <script>
+        var sidebar = L.control.sidebar('sidebar').addTo(map);
+    </script>
+</body>
+</html>

@@ -74,8 +74,7 @@ app.use('/lib', express.static(__dirname + '/webapp/lib'));
 
 // code which is executed on every (non static) request
 app.use(function(req, res, next) {
-    // log requests in console & analytics schema
-    console.log(req.method + ' ' + req.url + ' was requested by ' + req.connection.remoteAddress);
+    // log requests in analytics schema
     logToAnalytics(req.connection.remoteAddress, req.method + ' ' + req.url, 'SERVER-REQ');
 
     // allow CORS
@@ -91,7 +90,7 @@ app.get('/getJourney*', function(req, res) {
     if(req.query.id) {
     	Journey.findById(req.query.id, function (error, journey) {
             if (error) return console.error(error);
-            res.send(journey);
+            res.json(journey);
     	});
     } else {
         res.send('specify a journey ID as in /getJourney?id=myID')
@@ -99,7 +98,7 @@ app.get('/getJourney*', function(req, res) {
 });
 
 // returns IDs and names of all stored journeys
-app.get('/getJourneys', function(req, res) {
+app.get('/getAllJourneys', function(req, res) {
     Journey.find({}, '_id name', function(error, journeys) {
         if (error) return console.error(error);
         res.json(journeys);
@@ -123,10 +122,6 @@ app.post('/addJourney', function(req, res) {
     });
 });
 
-app.post('/addAnalytics', function(req, res) {
-    res.send(logToAnalytics(req.connection.remoteAddress, req.body, 'CLIENT-ACTION'));
-});
-
 // returns the stored analytics
 // query syntax: ?ip=val
 app.get('/getAnalytics*', function(req, res) {
@@ -135,6 +130,11 @@ app.get('/getAnalytics*', function(req, res) {
         if (error) return console.error(error);
         res.json(analytics);
     });
+});
+
+// inserts an client side entry into Analytics
+app.post('/addAnalytics', function(req, res) {
+    res.send(logToAnalytics(req.connection.remoteAddress, req.body.action, 'CLIENT-ACTION'));
 });
 
 function logToAnalytics(ip, action, type) {
@@ -148,6 +148,11 @@ function logToAnalytics(ip, action, type) {
     analytic.save(function(error){
         if(error) {
             console.log('failed to save analytic from ' + ip +': ' + error);
+        } else {
+            console.log(analytic.timestamp + '  '
+                        + analytic.ip + '\t'
+                        + analytic.type + '\t'
+                        + analytic.action);
         }
     });
 

@@ -12,25 +12,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <head>
-
-    <link rel="stylesheet" href="lib/css/leaflet.draw.css"/>
-    <link rel="stylesheet" href="lib/css/leaflet-routing-machine.css"/>
-
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
     <link rel="stylesheet" href="lib/css/leaflet-sidebar.min.css" />
 
     <style>
+        /* fullscreen map */
         body {
             padding: 0;
             margin: 0;
         }
-
-        html, body, #map {
-            height: 100%;
-            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
-        }
-
+        html, body, #map { height: 100%; }
     </style>
 </head>
 <body>
@@ -92,6 +85,8 @@
     <!-- custom scripts -->
     <script type="text/javascript" src="js/mapInit.js" defer=true></script>
     <script type="text/javascript" src="js/journey.js" defer=true></script>
+    <script type="text/javascript" src="js/clientRouting.js" defer=true></script>
+    <script type="text/javascript" src="js/analytics.js" defer=true></script>
 
 </body>
 </html>

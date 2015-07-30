@@ -7,6 +7,7 @@
 'use strict';
 
 // create logger & register it to consoleAppender
+var consoleAppender = JL.createConsoleAppender('consoleAppender');
 JL("mapLogger").setOptions({"appenders": [consoleAppender]});
 
 // create a new map, setting the view to Muenster
@@ -28,6 +29,8 @@ var baseMaps = {
 
 // layer control switch with basemaps
 var layerControl = new L.control.layers(baseMaps).addTo(map);
+// sidebar control
+var sidebar = L.control.sidebar('sidebar').addTo(map);
 
-// sets the OSM layer as default
+// sets the watercolor layer as default
 watercolorLayer.addTo(map);

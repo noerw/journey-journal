@@ -1,0 +1,10 @@
+{
+  "name": "myjourneyjournal",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "mongoose": "~4.0.6",
+    "express": "~4.13.0",
+    "body-parser": "~1.13.1"
+  }
+}

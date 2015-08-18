@@ -5,88 +5,96 @@
 <html lang="en">
 
   <head>
-      <title>my journey journal</title>
-      <meta name="author" content="Norwin Roosen">
+    <title>my journey journal</title>
+    <meta name="author" content="Norwin Roosen">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<head>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="lib/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="lib/css/bootstrap-datepicker3.min.css"/>
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
     <link rel="stylesheet" href="lib/css/leaflet-sidebar.min.css" />
 
     <style>
-        /* fullscreen map */
-        body {
-            padding: 0;
-            margin: 0;
-        }
-        html, body, #map { height: 100%; }
+      /* fullscreen map */
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      html, body, #map { height: 100%; }
     </style>
-</head>
-<body>
-    <div id="sidebar" class="sidebar collapsed">
-        <!-- Nav tabs -->
-        <ul class="sidebar-tabs" role="tablist">
-            <li><a href="#overview" role="tab"><i class="fa fa-list"></i></a></li>
-            <li><a href="#one"      role="tab"><i class="fa fa-angle-right"></i> 1</a></li>
-            <li><a href="#two"      role="tab"><i class="fa fa-angle-right"></i> 2</a></li>
-            <li><a href="#three"    role="tab"><i class="fa fa-angle-right"></i> 3</a></li>
-            <li><a href="#four"     role="tab"><i class="fa fa-angle-right"></i> 4</a></li>
-        </ul>
+  </head>
 
-        <!-- Tab panes -->
-        <div class="sidebar-content active">
-            <div class="sidebar-pane" id="overview">
-                <h1>Overview</h1>
-                <ul>
-                  <li><p>Item 1 Title</p></li>
-                  <li><p>Item 2 Title</p></li>
-                  <li><p>Item 3 Title</p></li>
-                  <li><p>Item 4 Title</p></li>
-                </ul>
-            </div>
-            <div class="sidebar-pane" id="one">
-                <h1>Item 1 Title</h1>
-                <p>Description asdfasdf jklöä# asdf.</p>
-                <div>pictures?</div>
-            </div>
-            <div class="sidebar-pane" id="two">
-                <h1>Item 2 Title</h1>
-                <p>Description asdfasdf jklöä# asdf.</p>
-                <div>pictures?</div>
-            </div>
-            <div class="sidebar-pane" id="three">
-                <h1>Item 3 Title</h1>
-                <p>Description asdfasdf jklöä# asdf.</p>
-                <div>pictures?</div>
-            </div>
-            <div class="sidebar-pane" id="four">
-                <h1>Item 4 Title</h1>
-                <p>Description asdfasdf jklöä# asdf.</p>
-                <div>pictures?</div>
-            </div>
+  <body>
+    <div id="sidebar" class="sidebar collapsed">
+
+      <!-- Nav tabs -->
+      <ul class="sidebar-tabs" role="tablist" id="sbar-tabs">
+          <li><a href="#overview" role="tab"><i class="fa fa-list"></i></a></li>
+          <li><a href="#add-section" role="tab"><i class="fa fa-plus"></i></a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="sidebar-content active" id="sbar-content">
+        <div class="sidebar-pane" id="overview">
+          <h1 id="journey-title"></h1>
+          <ul id="journey-sections">
+          </ul>
         </div>
+
+        <div class="sidebar-pane" id="add-section">
+          <h1>Add a new section</h1>
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label for="inputTitle" class="col-sm-2 control-label">Title:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputTitle" placeholder="Title">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputDate" class="col-sm-2 control-label">Date:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputDate">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputDesc" class="col-sm-2 control-label">Description:</label>
+              <div class="col-sm-10">
+                <textarea type="text" class="form-control" id="inputDesc" placeholder="Description"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" onclick="return addSection(this.form)" class="btn btn-default">Add section</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
     </div>
 
     <div id="map" class="sidebar-map"></div>
 
     <!-- library includes -->
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-    <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
-
     <script type="text/javascript" src="lib/js/jquery-1.11.3.min.js"></script>
-    <script src="lib/js/leaflet-routing-machine.js"></script>
-    <script src="lib/js/jsnlog.min.js"></script>
-    <script src="lib/js/leaflet-sidebar.min.js"></script>
+    <script type="text/javascript" src="lib/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+    <script type="text/javascript" src="lib/js/bootstrap-datepicker.min.js"></script>
+
+    <script src="lib/js/leaflet-sidebar_custom_old.js"></script>
 
     <!-- custom scripts -->
-    <script type="text/javascript" src="js/mapInit.js" defer=true></script>
-    <script type="text/javascript" src="js/journey.js" defer=true></script>
     <script type="text/javascript" src="js/clientRouting.js" defer=true></script>
     <script type="text/javascript" src="js/analytics.js" defer=true></script>
+    <script type="text/javascript" src="js/mapInit.js" defer=true></script>
+    <script type="text/javascript" src="js/journeyEdit.js" defer=true></script>
 
-</body>
+    <script type="text/javascript"> // initialize datepicker
+      $('#inputDate').datepicker({format: 'yyyy-mm-dd'});
+    </script>
+  </body>
 </html>

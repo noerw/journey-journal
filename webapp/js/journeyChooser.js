@@ -10,7 +10,7 @@
  * loads the stored journeys and shows them in the table once the pages is loaded
  */
  $(document).ready(function() {
-    // ajax journeys
+    // ajax stored journeys
     $.ajax({
       type: 'GET',
       dataType: 'json',

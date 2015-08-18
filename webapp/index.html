@@ -29,6 +29,11 @@
       h1, h5 { text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.8); }
       #tableCol {	margin-bottom: -10px; }
       #journeysTblBody tr { cursor: pointer; }
+      .subheading { 
+        font-weight: bold;
+        font-style: italic;
+        font-size: 125%;
+      }
     </style>
   </head>
 
@@ -37,13 +42,13 @@
     <h5>the awesome app to document your traveling</h5>
     
     <div class="row">
-      <p>Select a saved journey below, or create a new one to start!</p>
+      <p class="subheading">To start, create a new journey...</p>
       <div class="col-md-4"></div>
       <div class="col-md-4">
 		    <div class="input-group" submit="newJourney()">
 		      <input id="newJourneyTxt" type="text" class="form-control" placeholder="Name...">
 		      <span class="input-group-btn">
-		        <button id="newJourneyBtn" class="btn btn-success" type="button" onclick="newJourney()">Create new journey!</button>
+		        <button id="newJourneyBtn" class="btn btn-success" type="button" onclick="newJourney()">new journey</button>
 		      </span>
 		    </div><!-- /input-group -->
 	    </div><!-- /col -->
@@ -53,6 +58,7 @@
     <div class="row">
       <div class="col-md-3"></div>
       <div class="col-md-6" id="tableCol">
+        <p class="subheading">...or select one below:</p>
 	      <table id="journeysTbl" class="table table-hover hidden">
 	        <thead>
 	          <tr><td><b>stored journeys:</b></td></tr>
@@ -68,8 +74,6 @@
     <script type="text/javascript" src="js/analytics.js"      defer=true></script>
     <script type="text/javascript" src="js/journey.js"        defer=true></script>
     <script type="text/javascript" src="js/journeyChooser.js" defer=true></script>
-
-
   </body>
 
 </html>

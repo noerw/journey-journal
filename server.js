@@ -20,6 +20,8 @@ var mongoose   = require('mongoose');
 var app = express();
 app.use(bodyParser.urlencoded({extended: true})); // enable processing of the received post content
 
+
+
 /* database schema for journeys */
 var locationSchema = mongoose.Schema({
     name:     String,
@@ -30,6 +32,7 @@ var locationSchema = mongoose.Schema({
 var sectionSchema = mongoose.Schema({
     name:        String,
     description: String,
+    date:        Date,
     locations:   [locationSchema]
 });
 
@@ -40,6 +43,7 @@ var journeySchema = mongoose.Schema({
 });
 var Journey = mongoose.model('Journey', journeySchema);
 
+
 /* database schema for analytics */
 var analyticsSchema = mongoose.Schema({
     ip:        String,
@@ -48,6 +52,7 @@ var analyticsSchema = mongoose.Schema({
     timestamp: { type: Date, default: Date.now }
 });
 var Analytics = mongoose.model('Analytics', analyticsSchema);
+
 
 
 /* init database connection */
@@ -64,6 +69,7 @@ database.once('open', function (callback) {
         console.log('http server now running on port ' + config.httpPort);
     });
 });
+
 
 
 /* http routing */
@@ -136,6 +142,7 @@ app.get('/getAnalytics*', function(req, res) {
 app.post('/addAnalytics', function(req, res) {
     res.send(logToAnalytics(req.connection.remoteAddress, req.body.action, 'CLIENT-ACTION'));
 });
+
 
 function logToAnalytics(ip, action, type) {
     var analytic = new Analytics({

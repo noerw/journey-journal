@@ -6,6 +6,10 @@
 
 'use strict';
 
+/**
+ * @desc  pushes log-entries of user-interaction/analytics to the DB server
+ * @param action string describing the action
+ */
 function logToDB(action) {
     $.ajax({
         type: 'POST',

@@ -22,6 +22,7 @@ $(document).ready(function() {
     loadJourney(window.location.search.slice(4), loadJourneyContentsIntoMap); // 4 for '?id='
 });
 
+
 /**
  * @desc  displays the contents of the local journey on the site
  *        by addin its contents to the sidebar & map
@@ -45,4 +46,7 @@ function loadJourneyContentsIntoMap() {
 
         }
     }
+
+    // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
+    sidebar.open(window.location.hash.slice(1));
 };

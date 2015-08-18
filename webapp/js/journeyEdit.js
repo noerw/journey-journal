@@ -7,33 +7,6 @@
 'use strict';
 
 /*
- * datastructure for the journey
- */
-function Journey(name, sections) {
-	this.name     = name     || 'journey title';
-	this.sections = sections || [];
-
-	this.toString = function() {
-		return JSON.stringify(this, null, '  ');
-	};
-};
-
-function Section(name, description, date, locations) {
-	this.name        = name        || 'section title';
-	this.date        = date        || '18/08/2015';
-	this.description = description || 'enter a description..';
-	this.locations   = locations   || [];
-};
-
-function Location(name, geojson, imgRef) {
-	this.name    = name    || 'location name';
-	this.geojson = geojson || {};
-	this.imgRef  = imgRef  || '';
-};
-
-
-
-/*
  * HTML templates for new sections in the sidebar
  */
 function sbarTab(number) {
@@ -69,6 +42,9 @@ function addSection(form) {
 				 	 sbarPanel(section.name, section.description, section.date)
  	);
 
+ 	sidebar.open(panelID);
+ 	window.location.hash = '#' + panelID; // needed, as plugin update the url :^(
+
 	return false; // to supress the submit of the form
 };
 
@@ -98,7 +74,7 @@ function loadJourney(id, callback) {
         success: function(content, textStatus){
             journey = content;
             console.log('journey (' + journey.name + ') was loaded');
-            
+
             // execute callback when ajax is finished
             if (typeof callback === 'function') callback();
         },

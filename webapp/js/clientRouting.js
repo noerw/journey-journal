@@ -19,9 +19,32 @@ $(document).ready(function() {
     }
 
     // loads the journey & displays it
-    loadJourney(window.location.search.slice(4), loadJourneyContentsIntoMap); // 4 for '?id='
+    loadJourney(window.location.search.slice(4)); // 4 for '?id='
 });
 
+/**
+ * @desc  loads the specified journey from the DB server
+ * @param id ID of the journey
+ * @param callback function that is executed after the ajax call succeeded
+ */
+function loadJourney(id) {
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: 'http://' + window.location.host + '/getJourney?id=' + id,
+        timeout: 5000,
+        success: function(content, textStatus){
+            journey = content;
+            console.log('journey (' + journey.name + ') was loaded');
+            
+            // make the loaded content visible
+            loadJourneyContentsIntoMap();
+        },
+        error: function(xhr, textStatus, errorThrown){
+            console.error('journey could not be loaded..  ' + errorThrown);
+        }
+    });
+};
 
 /**
  * @desc  displays the contents of the local journey on the site
@@ -37,10 +60,9 @@ function loadJourneyContentsIntoMap() {
 
         // add to overview
         $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
-
         // add sidebar panel
-        sidebar.addPanel(section.title, sbarTab(i + 1), sbarPanel(section.title, section.description));
-
+        sidebar.addPanel(section._id, sbarTab(i + 1), sbarPanel(section.name, section.description, section.date));
+        
         // add locations from sections to the map
         for (var k = 0; k < section.locations.length; k++) {
 

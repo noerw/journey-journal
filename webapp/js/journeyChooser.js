@@ -66,15 +66,20 @@ function newJourney() {
 };
 
 /**
- * loads a journey
+ * opens a journey
  * @param a string containing the journeys ID, or the corresponding table row DOM element
  */
 function loadJourney(param) {
 	var url = 'http://' + window.location.host + '/journey?id=';
 
-  if (typeof param === 'string') url += param; // param: id string
-  else url += $(param).data('id');             // param: table row
+  if (typeof param === 'string') { // executed from 'newJourney()'
+      url += param; 
+      url += '#add-section'; 
+  }  else {                        // executed from tablerow click
+      url += $(param).data('id'); 
+      url += '#overview'; 
+  }
 
-	// go to map
-	window.location = url;
+	// go to map page
+  window.location = url;
 };

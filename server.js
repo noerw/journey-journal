@@ -63,10 +63,9 @@ database.on('error', console.error.bind(console, 'ABORTING. database connection 
 
 // once db connection is open, start http server
 database.once('open', function (callback) {
-    
     console.log('connection to database established on port ' + config.mongoPort);
     app.listen(config.httpPort, function(){
-        console.log('http server now running on port ' + config.httpPort);
+        console.log('http server now listening on port ' + config.httpPort);
     });
 });
 
@@ -113,8 +112,6 @@ app.get('/getAllJourneys', function(req, res) {
 
 // takes a json document via POST, which will be added to the database
 app.post('/addJourney', function(req, res) {
-	console.log(JSON.stringify(req.body));
-
     var journey = new Journey({
         name: req.body.name,
         updated: new Date(),
@@ -127,6 +124,19 @@ app.post('/addJourney', function(req, res) {
         res.send(journey._id); // return the id of the new document
     });
 });
+
+// updates the journey which is received
+app.post('/updateJourney', function(req, res) {
+    Journey.findByIdAndUpdate(
+        req.body._id, 
+        { name: req.body.name, sections: req.body.sections, updated: new Date() },
+        { new: true },
+        function(err, result) {
+            res.send(result);
+        }
+    );
+});
+
 
 // returns the stored analytics
 // query syntax: ?ip=val

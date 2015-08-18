@@ -37,9 +37,10 @@ var sectionSchema = mongoose.Schema({
 });
 
 var journeySchema = mongoose.Schema({
-    name:     String,
-    updated:  { type: Date, default: Date.now },
-    sections: [sectionSchema]
+    name:        String,
+    description: String,
+    sections:    [sectionSchema],
+    updated:     { type: Date, default: Date.now }
 });
 var Journey = mongoose.model('Journey', journeySchema);
 
@@ -104,7 +105,7 @@ app.get('/getJourney*', function(req, res) {
 
 // returns IDs and names of all stored journeys
 app.get('/getAllJourneys', function(req, res) {
-    Journey.find({}, '_id name', function(error, journeys) {
+    Journey.find({}, '_id name').sort( {updated: -1} ).exec(function(error, journeys) {
         if (error) return console.error(error);
         res.json(journeys);
     });
@@ -114,6 +115,7 @@ app.get('/getAllJourneys', function(req, res) {
 app.post('/addJourney', function(req, res) {
     var journey = new Journey({
         name: req.body.name,
+        description: req.body.description,
         updated: new Date(),
     	sections: req.body.sections
     });
@@ -129,7 +131,12 @@ app.post('/addJourney', function(req, res) {
 app.post('/updateJourney', function(req, res) {
     Journey.findByIdAndUpdate(
         req.body._id, 
-        { name: req.body.name, sections: req.body.sections, updated: new Date() },
+        { 
+            name: req.body.name,
+            description: req.body.description,
+            sections: req.body.sections,
+            updated: new Date()
+        },
         { new: true },
         function(err, result) {
             res.send(result);

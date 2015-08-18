@@ -36,6 +36,7 @@ function loadJourney(id) {
         success: function(content, textStatus){
             journey = content;
             console.log('journey (' + journey.name + ') was loaded');
+            console.log(JSON.stringify(journey));
             
             // make the loaded content visible
             loadJourneyContentsIntoMap();
@@ -53,6 +54,7 @@ function loadJourney(id) {
 function loadJourneyContentsIntoMap() {
     // set title in overview
     $('#journey-title').html('Overview: ' + journey.name);
+    $('#journey-desc').html(journey.description);
 
     // add sections to the sidebar & overview
     for (var i = 0; i < journey.sections.length; i++) {
@@ -61,7 +63,8 @@ function loadJourneyContentsIntoMap() {
         // add to overview
         $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
         // add sidebar panel
-        sidebar.addPanel(section._id, sbarTab(i + 1), sbarPanel(section.name, section.description, section.date));
+        var panelContent = sbarPanel(section.name, section.description, section.date);
+        sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
         
         // add locations from sections to the map
         for (var k = 0; k < section.locations.length; k++) {

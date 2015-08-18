@@ -14,7 +14,7 @@ function sbarTab(number) {
 };
 
 function sbarPanel(name, description, date) {
-    return '<h1>%NAME%</h1><p>%DATE%</p><p>%DESC%</p>'.replace('%NAME%', name)
+    return '<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'.replace('%NAME%', name)
         .replace('%DESC%', description)
         .replace('%DATE%', 'Date: ' + date.slice(0,10));
 };
@@ -29,12 +29,17 @@ function addSection(form) {
 
 	// push changes to server DB
 	updateJourney(function() {
-		// add section to sidebar (content, tab, (overview?))
+		// add section to sidebar (content, tab, overview)
 		var panelID = journey.sections[journey.sections.length - 1]._id;
 
-		sidebar.addPanel(panelID, sbarTab(journey.sections.length),
+		sidebar.addPanel(
+			panelID,
+			sbarTab(journey.sections.length),
 	 		sbarPanel(section.name, section.description, section.date)
 	 	);
+
+        $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
+
 
 	 	sidebar.open(panelID);
 	 	window.location.hash = '#' + panelID; // needed, as plugin update the url :^(		

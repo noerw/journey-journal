@@ -38,31 +38,31 @@
  * creates a new journey and loads it
  */
 function newJourney() {
-	// get name from textfield
-	var name = $('#newJourneyTxt').val();
-	if (!name) {
+  	// get name from textfield
+  	var name = $('#newJourneyTxt').val();
+  	if (!name) {
 		alert('Please enter a name!');
 		return;
-	}
+  	}
+    var description = prompt('please enter a description to your journey:');
 
     // ajax to push the journey to the DB
     $.ajax({
         type: 'POST',
-        data: new Journey(name),
+        data: new Journey(name, description),
         url: 'http://' + window.location.host + '/addJourney',
         timeout: 5000,
         success: function(data, textStatus ){
-        	console.log('new route was saved');
+        	console.log('new journey was saved to DB');
         	// store analytic
-        	logToDB('new journey');
+        	logToDB('journey created: ' + data);
         	// load the new route
         	loadJourney(data);
         },
         error: function(xhr, textStatus, errorThrown){
-			console.log("naaaw... " + errorThrown);
+	        console.log("couldn't create new journey on DB: " + errorThrown);
         }
     });
-	// once uploaded, load it in the map
 };
 
 /**
@@ -72,14 +72,18 @@ function newJourney() {
 function loadJourney(param) {
 	var url = 'http://' + window.location.host + '/journey?id=';
 
-  if (typeof param === 'string') { // executed from 'newJourney()'
-      url += param; 
-      url += '#add-section'; 
-  }  else {                        // executed from tablerow click
-      url += $(param).data('id'); 
-      url += '#overview'; 
-  }
+    if (typeof param === 'string') { // executed from 'newJourney()'
+        url += param; 
+        url += '#add-section'; 
+        logToDB('journey loaded: ' + param);
+    }  else {                        // executed from tablerow click
+        var id = $(param).data('id'); 
+        url += id
+        url += '#overview';
+        logToDB('journey loaded: ' + id);
+  
+    }
 
 	// go to map page
-  window.location = url;
+    window.location = url;
 };

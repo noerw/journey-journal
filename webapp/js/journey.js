@@ -9,9 +9,10 @@
 /*
  * datastructure for the journey
  */
-function Journey(name, sections) {
-	this.name     = name     || 'journey title';
-	this.sections = sections || [];
+function Journey(name, description, sections) {
+	this.name        = name        || 'journey title';
+	this.description = description || 'journey description';
+	this.sections    = sections    || [];
 
 	this.toString = function() {
 		return JSON.stringify(this, null, '  ');

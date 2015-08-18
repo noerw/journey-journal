@@ -138,7 +138,8 @@ app.post('/updateJourney', function(req, res) {
             updated: new Date()
         },
         { new: true },
-        function(err, result) {
+        function(error, result) {
+            if (error) return console.error(error);
             res.send(result);
         }
     );

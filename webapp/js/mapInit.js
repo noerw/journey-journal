@@ -15,19 +15,17 @@ var osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 });
 var tonerLayer = new L.StamenTileLayer("toner");
 var watercolorLayer = new L.StamenTileLayer("watercolor");
-
-// layer group for basemaps
 var baseMaps = {
      "Open Street Map": osmLayer,
      "Watercolor": watercolorLayer,
      "Toner": tonerLayer,
 }
 
-// layer control switch with basemaps
-var layerControl = new L.control.layers(baseMaps).addTo(map);
-// sidebar control
-var sidebar = L.control.sidebar('sidebar').addTo(map);
-sidebar.open('overview');
+// controls of the map
+var sidebar      = L.control.sidebar('sidebar').addTo(map);
+var layerControl = L.control.layers(baseMaps).addTo(map);
+L.control.scale().addTo(map);
 
-// sets the watercolor layer as default
+// misc init
+sidebar.open('overview');
 watercolorLayer.addTo(map);

@@ -14,13 +14,17 @@ function sbarTab(number) {
 };
 
 function sbarPanel(name, description, date) {
-    return '<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'.replace('%NAME%', name)
-        .replace('%DESC%', description)
+    return '<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'
+    	.replace('%NAME%', name)
+        .replace('%DESC%', description.replace(/\n/g, '<br>'))
         .replace('%DATE%', 'Date: ' + date.slice(0,10));
 };
 
 
-
+/**
+ * @desc  adds a new section to the journey, and pushes the change to the DB server
+ * @param form DOM element of the new-section-form
+ */
 function addSection(form) {
 	var section = new Section(form.inputTitle.value, form.inputDesc.value, form.inputDate.value);
 	// add section to data
@@ -29,7 +33,7 @@ function addSection(form) {
 
 	// push changes to server DB
 	updateJourney(function() {
-		// add section to sidebar (content, tab, overview)
+		// add section to sidebar (content, tab, overview), after the server responded
 		var panelID = journey.sections[journey.sections.length - 1]._id;
 
 		sidebar.addPanel(
@@ -40,17 +44,18 @@ function addSection(form) {
 
         $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
 
-
 	 	sidebar.open(panelID);
-	 	window.location.hash = '#' + panelID; // needed, as plugin update the url :^(		
+	 	window.location.hash = '#' + panelID; // needed, as plugin doesn't update the url :^(		
 	});
-	
+
+	logToDB('section added');
 	return false; // to supress the submit of the form
 };
 
 
 /**
  * @desc  pushes changes on the journey to the DB server and updates its local version
+ * @param callback function that is executed, after the ajax call succeeded
  */
 function updateJourney(callback) {
     $.ajax({

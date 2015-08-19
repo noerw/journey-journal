@@ -6,28 +6,22 @@
 
 'use strict';
 
-/*
- * datastructure for the journey
- */
 function Journey(name, description, sections) {
 	this.name        = name        || 'journey title';
 	this.description = description || 'journey description';
 	this.sections    = sections    || [];
-
-	this.toString = function() {
-		return JSON.stringify(this, null, '  ');
-	};
 };
 
 function Section(name, description, date, locations) {
 	this.name        = name        || 'section title';
-	this.date        = date        || '18/08/2015';
 	this.description = description || 'enter a description..';
+	this.date        = date        || '18/08/2015';
 	this.locations   = locations   || [];
 };
 
 function Location(name, geojson, imgRef) {
-	this.name    = name    || 'location name';
-	this.geojson = geojson || {};
-	this.imgRef  = imgRef  || '';
+	this.name        = name        || 'location name';
+	this.description = description || 'location description';
+	this.geojson     = geojson     || {};
+	this.imgRef      = imgRef      || '';
 };

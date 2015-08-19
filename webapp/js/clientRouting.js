@@ -6,11 +6,11 @@
 
 'use strict';
 
-// the local version of the journey that is loaded/viewed/edited
+// the local copy of the journey that is loaded/viewed/edited
 var journey = {};
 
-// load a journey depending on the url query
-// and add its content to the sidebar & map
+// load a journey depending on the url query upon startup
+// & add its content to the sidebar & map
 $(document).ready(function() {
     // checks wether a journey ID is specified
     if (window.location.search == '') {
@@ -54,7 +54,7 @@ function loadJourney(id) {
 function loadJourneyContentsIntoMap() {
     // set title in overview
     $('#journey-title').html('Overview: ' + journey.name);
-    $('#journey-desc').html(journey.description);
+    $('#journey-desc').html(journey.description.replace(/\n/g, '<br>'));
 
     // add sections to the sidebar & overview
     for (var i = 0; i < journey.sections.length; i++) {
@@ -63,7 +63,7 @@ function loadJourneyContentsIntoMap() {
         // add to overview
         $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
         // add sidebar panel
-        var panelContent = sbarPanel(section.name, section.description, section.date);
+        var panelContent = sbarPanel(section.name, section.description.replace(/\n/g, '<br>'), section.date);
         sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
         
         // add locations from sections to the map

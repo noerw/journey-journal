@@ -24,9 +24,10 @@ app.use(bodyParser.urlencoded({extended: true})); // enable processing of the re
 
 /* database schema for journeys */
 var locationSchema = mongoose.Schema({
-    name:     String,
-    geojson:  {},
-    imgRef:   String
+    name:        String,
+    description: String,
+    geojson:     {},
+    imgRef:      String
 });
 
 var sectionSchema = mongoose.Schema({
@@ -78,13 +79,19 @@ app.use('/img', express.static(__dirname + '/webapp/img'));
 app.use('/js',  express.static(__dirname + '/webapp/js'));
 app.use('/lib', express.static(__dirname + '/webapp/lib'));
 
+// inserts an client side entry into Analytics
+app.post('/addAnalytics', function(req, res) {
+    res.send(logToAnalytics(req.connection.remoteAddress, req.body.action, 'CLIENT-ACTION'));
+});
+
+
 // code which is executed on every (non static) request
 app.use(function(req, res, next) {
     // log requests in analytics schema
     logToAnalytics(req.connection.remoteAddress, req.method + ' ' + req.url, 'SERVER-REQ');
 
     // allow CORS
-    res.header('Access-Control-Allow-Origin', '*');
+    //res.header('Access-Control-Allow-Origin', '*');
     next();
 });
 
@@ -154,11 +161,6 @@ app.get('/getAnalytics*', function(req, res) {
         if (error) return console.error(error);
         res.json(analytics);
     });
-});
-
-// inserts an client side entry into Analytics
-app.post('/addAnalytics', function(req, res) {
-    res.send(logToAnalytics(req.connection.remoteAddress, req.body.action, 'CLIENT-ACTION'));
 });
 
 

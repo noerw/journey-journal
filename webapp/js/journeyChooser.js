@@ -7,7 +7,7 @@
 'use strict';
 
 /**
- * loads the stored journeys and shows them in the table once the pages is loaded
+ * loads the stored journeys and shows them in the table on startup
  */
  $(document).ready(function() {
     // ajax stored journeys
@@ -40,29 +40,39 @@
 function newJourney() {
   	// get name from textfield
   	var name = $('#newJourneyTxt').val();
-  	if (!name) {
-		alert('Please enter a name!');
-		return;
-  	}
-    var description = prompt('please enter a description to your journey:');
+  	if (!name) return bootbox.alert({ size: 'small', message: 'Please enter a name!' });
 
-    // ajax to push the journey to the DB
-    $.ajax({
-        type: 'POST',
-        data: new Journey(name, description),
-        url: 'http://' + window.location.host + '/addJourney',
-        timeout: 5000,
-        success: function(data, textStatus ){
-        	console.log('new journey was saved to DB');
-        	// store analytic
-        	logToDB('journey created: ' + data);
-        	// load the new route
-        	loadJourney(data);
+    bootbox.dialog({
+        title: 'Journey description',
+        message: 'Please enter a description to your journey:'
+               + '<br><br><textarea rows="8" cols="40" id="descTxtArea" class="form-control"></textarea>',
+        buttons: {
+            'Cancel': {},
+            'OK': {
+                className: "btn-success",
+                callback: function() {
+                    // ajax to push the journey to the DB
+                    $.ajax({
+                        type: 'POST',
+                        data: new Journey(name, $('#descTxtArea').val()),
+                        url: 'http://' + window.location.host + '/addJourney',
+                        timeout: 5000,
+                        success: function(data, textStatus ){
+                            console.log('new journey was saved to DB');
+                            // store analytic
+                            logToDB('journey created: ' + data);
+                            // load the new route
+                            loadJourney(data);
+                        },
+                        error: function(xhr, textStatus, errorThrown){
+                            console.log("couldn't create new journey on DB: " + errorThrown);
+                        }
+                    });
+                }
+            }
         },
-        error: function(xhr, textStatus, errorThrown){
-	        console.log("couldn't create new journey on DB: " + errorThrown);
-        }
-    });
+        onEscape: function() {}
+    }); 
 };
 
 /**

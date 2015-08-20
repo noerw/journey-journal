@@ -6,6 +6,13 @@
 
 'use strict';
 
+// the local copy of the journey that is loaded/viewed/edited
+// value is filled in clientRouting.js#loadJourney() and journeyEdit.js#updateJourney()
+var journey = {};
+// local copy of the currently selected section (copied from above journey)
+// value is filled in mapInit.js#sidebar.on('content', ...)
+var section = {};
+
 function Journey(name, description, sections) {
 	this.name        = name        || 'journey title';
 	this.description = description || 'journey description';
@@ -19,9 +26,9 @@ function Section(name, description, date, locations) {
 	this.locations   = locations   || [];
 };
 
-function Location(name, geojson, imgRef) {
+function Location(geojson, name, description, imgRef) {
+	this.geojson     = geojson     || {};
 	this.name        = name        || 'location name';
 	this.description = description || 'location description';
-	this.geojson     = geojson     || {};
 	this.imgRef      = imgRef      || '';
 };

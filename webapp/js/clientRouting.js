@@ -6,9 +6,6 @@
 
 'use strict';
 
-// the local copy of the journey that is loaded/viewed/edited
-var journey = {};
-
 // load a journey depending on the url query upon startup
 // & add its content to the sidebar & map
 $(document).ready(function() {
@@ -68,7 +65,7 @@ function loadJourneyContentsIntoMap() {
         
         // add locations from sections to the map
         for (var k = 0; k < section.locations.length; k++) {
-
+            
         }
     }
 

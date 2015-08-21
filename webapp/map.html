@@ -42,8 +42,7 @@
         <div class="sidebar-pane" id="overview">
           <h1 id="journey-title">No journey was loaded! :^(</h1>
           <p  id="journey-desc"></p>
-          <ul id="journey-sections">
-          </ul>
+          <ol id="journey-sections"></ol>
         </div>
 
         <div class="sidebar-pane" id="add-section">
@@ -93,6 +92,7 @@
     <script src="lib/js/leaflet-sidebar_custom_old.js"></script>
 
     <!-- custom scripts -->
+    <script type="text/javascript" src="js/htmlTemplates.js" defer=true></script>
     <script type="text/javascript" src="js/mapInit.js" defer=true></script>
     <script type="text/javascript" src="js/journey.js" defer=true></script>
     <script type="text/javascript" src="js/clientRouting.js" defer=true></script>
@@ -100,7 +100,11 @@
     <script type="text/javascript" src="js/journeyEdit.js" defer=true></script>
 
     <script type="text/javascript"> // initialize datepicker
-      $('#inputDate').datepicker({format: 'yyyy-mm-dd'});
+      $('#inputDate').datepicker({format: 'yyyy-mm-dd'})
+        .on('changeDate', function(e) {
+          $('#inputDate').datepicker('hide');
+        }
+      );
     </script>
   </body>
 </html>

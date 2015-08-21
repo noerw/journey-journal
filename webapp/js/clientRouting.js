@@ -19,6 +19,12 @@ $(document).ready(function() {
     loadJourney(window.location.search.slice(4)); // 4 for '?id='
 });
 
+// open sidebar on the corresponding tab
+// needed for the links in the overview tab
+window.onhashchange = function(e) {
+    if (e.oldURL.search('#overview') !== -1) sidebar.open(window.location.hash.slice(1));
+};
+
 /**
  * @desc  loads the specified journey from the DB server
  * @param id ID of the journey
@@ -33,10 +39,13 @@ function loadJourney(id) {
         success: function(content, textStatus){
             journey = content;
             console.log('journey (' + journey.name + ') was loaded');
-            console.log(JSON.stringify(journey));
+            //console.log(JSON.stringify(journey, null, '  '));
             
             // make the loaded content visible
-            loadJourneyContentsIntoMap();
+            loadJourneyContentsIntoSidebar();
+            
+            // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
+            sidebar.open(window.location.hash.slice(1));
         },
         error: function(xhr, textStatus, errorThrown){
             console.error('journey could not be loaded..  ' + errorThrown);
@@ -46,9 +55,9 @@ function loadJourney(id) {
 
 /**
  * @desc  displays the contents of the local journey on the site
- *        by addin its contents to the sidebar & map
+ *        by adding its contents to the sidebar
  */
-function loadJourneyContentsIntoMap() {
+function loadJourneyContentsIntoSidebar() {
     // set title in overview
     $('#journey-title').html('Overview: ' + journey.name);
     $('#journey-desc').html(journey.description.replace(/\n/g, '<br>'));
@@ -58,17 +67,9 @@ function loadJourneyContentsIntoMap() {
         var section = journey.sections[i];
 
         // add to overview
-        $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
+        $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
         // add sidebar panel
         var panelContent = sbarPanel(section.name, section.description.replace(/\n/g, '<br>'), section.date);
         sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
-        
-        // add locations from sections to the map
-        for (var k = 0; k < section.locations.length; k++) {
-            
-        }
     }
-
-    // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
-    sidebar.open(window.location.hash.slice(1));
 };

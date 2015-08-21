@@ -24,17 +24,15 @@ app.use(bodyParser.urlencoded({extended: true})); // enable processing of the re
 
 /* database schema for journeys */
 var locationSchema = mongoose.Schema({
-    name:        String,
-    description: String,
-    geojson:     {},
-    imgRef:      String
+    //geojson:     {},
+
 });
 
 var sectionSchema = mongoose.Schema({
     name:        String,
     description: String,
-    date:        Date,
-    locations:   [locationSchema]
+    date:        { type: Date, default: Date.now },
+    locations:   [{}]
 });
 
 var journeySchema = mongoose.Schema({
@@ -127,9 +125,7 @@ app.post('/addJourney', function(req, res) {
     	sections: req.body.sections
     });
     journey.save(function(error){
-        var message = error ? 'failed to save journey: ' + error 
-                            : 'journey saved';
-        console.log(message + ' from ' + req.connection.remoteAddress);
+        if (error) return console.error(error);
         res.send(journey._id); // return the id of the new document
     });
 });

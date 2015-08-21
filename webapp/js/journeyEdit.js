@@ -6,21 +6,6 @@
 
 'use strict';
 
-/*
- * HTML templates for new sections in the sidebar
- */
-function sbarTab(number) {
-    return '<i class="fa fa-angle-right"></i> ' + number;
-};
-
-function sbarPanel(name, description, date) {
-    return '<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'
-    	.replace('%NAME%', name)
-        .replace('%DESC%', description.replace(/\n/g, '<br>'))
-        .replace('%DATE%', 'Date: ' + date.slice(0,10));
-};
-
-
 /**
  * @desc  adds a new section to the journey, and pushes the change to the DB server
  * @param form DOM element of the new-section-form
@@ -30,6 +15,7 @@ function addSection(form) {
 	// add section to data
 	journey.sections.push(section);
 	form.reset();
+	console.log(JSON.stringify(journey, null, '  '));
 
 	// push changes to server DB
 	updateJourney(function() {
@@ -42,10 +28,11 @@ function addSection(form) {
 	 		sbarPanel(section.name, section.description, section.date)
 	 	);
 
-        $('#journey-sections').append('<li><p>' + section.name + '</p></li>');
+        $('#journey-sections').append('<li><a href="#' + panelID + '">' + section.name + '</a></li>');
 
-	 	sidebar.open(panelID);
-	 	window.location.hash = '#' + panelID; // needed, as plugin doesn't update the url :^(		
+        // update the adress hash ( and open the correct sidebar tab)
+	 	//sidebar.open(panelID);
+	 	window.location.hash = '#' + panelID;
 	});
 
 	logToDB('section added');

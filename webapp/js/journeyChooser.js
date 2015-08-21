@@ -44,8 +44,8 @@ function newJourney() {
 
     bootbox.dialog({
         title: 'Journey description',
-        message: 'Please enter a description to your journey:'
-               + '<br><br><textarea rows="8" cols="40" id="descTxtArea" class="form-control"></textarea>',
+        message: 'Please enter a description to your journey:<br><br>'
+               + '<textarea rows="8" cols="40" id="descTxtArea" class="form-control"></textarea>',
         buttons: {
             'Cancel': {},
             'OK': {

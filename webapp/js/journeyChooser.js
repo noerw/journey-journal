@@ -18,7 +18,7 @@
       timeout: 5000,
       success: function(content, textStatus){
         // add the loaded items to the table
-        // each journeys id is stored in the table rows journeyID attribute
+        // each journeys id is stored in the table rows data-id attribute
         // add a button to each row & register loadJourney() there
         for (var i = 0; i < content.length; i++) {
             $('#journeysTblBody').append('<tr onclick="loadJourney(this)" data-id="' 
@@ -62,7 +62,7 @@ function newJourney() {
                             // store analytic
                             logToDB('journey created: ' + data);
                             // load the new route
-                            loadJourney(data);
+                            openJourney(data);
                         },
                         error: function(xhr, textStatus, errorThrown){
                             console.log("couldn't create new journey on DB: " + errorThrown);
@@ -79,19 +79,16 @@ function newJourney() {
  * opens a journey
  * @param a string containing the journeys ID, or the corresponding table row DOM element
  */
-function loadJourney(param) {
+function openJourney(param) {
 	var url = 'http://' + window.location.host + '/journey?id=';
-
+    
     if (typeof param === 'string') { // executed from 'newJourney()'
-        url += param; 
-        url += '#add-section'; 
+        url += param + '#add-section'; 
         logToDB('journey loaded: ' + param);
     }  else {                        // executed from tablerow click
         var id = $(param).data('id'); 
-        url += id
-        url += '#overview';
+        url += id + '#overview';
         logToDB('journey loaded: ' + id);
-  
     }
 
 	// go to map page

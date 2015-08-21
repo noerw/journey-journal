@@ -8,16 +8,18 @@
 
 // create a new map, setting the view to Muenster
 var map = L.map('map', {
+    center: [51.96, 7.624],
+    zoom: 14,
     minZoom: 2,
     maxZoom: 17
-}).setView([51.96, 7.624], 14);
+});
 
 // define basemaps
 var osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 });
-var tonerLayer = new L.StamenTileLayer("toner");
 var watercolorLayer = new L.StamenTileLayer("watercolor");
+var tonerLayer      = new L.StamenTileLayer("toner");
 var baseMaps = {
      "Open Street Map": osmLayer,
      "Watercolor": watercolorLayer,
@@ -42,8 +44,6 @@ watercolorLayer.addTo(map);
  * & re-init the draw control
  */
 sidebar.on('content', function(e) {
-    //console.log(e.id);
-
     // remove draw control & drawn items, if it exists
     if (draw !== undefined) {
     	map.removeLayer(drawnItems);
@@ -61,15 +61,12 @@ sidebar.on('content', function(e) {
 
         // add the sections layers to drawnItems
     	for (var i = 0; i < section.locations.length; i++) {
-            var location = section.locations[i];
-            var name     = location.properties.name;
-            var desc     = location.properties.description;
-            var imgref   = location.properties.imgref;
+            var locProp = section.locations[i].properties;
 
-	        L.geoJson(location, {
+	        L.geoJson(section.locations[i], {
                 onEachFeature: function (feature, layer) { 
                     // add popups
-                    layer.bindPopup(locationPopup(name, desc, imgref));
+                    layer.bindPopup(locationPopup(locProp.name, locProp.description, locProp.imgref));
                     drawnItems.addLayer(layer); 
                 }
             });
@@ -120,7 +117,6 @@ map.on('draw:created', function(e) {
 
 /**
  * update location in the database, when it was modified in the map
- * @param e draw event
  */
 map.on('draw:edited', function (e) {
     // as there isn't any id given to the layer it's not possible
@@ -140,7 +136,6 @@ map.on('draw:edited', function (e) {
 
 /**
  * remove location in the database, when it was removed from the map
- * @param e draw event
  */
 map.on('draw:deleted', function (e) {
     e.layers.eachLayer(function(layer) {
@@ -154,10 +149,11 @@ map.on('draw:deleted', function (e) {
 
 /**
  * helper function to find the currently selected section in the sidebar
- * @param id optional id of the tab
+ * @param id optional id of the section
  * @return the selected section from the local journeys copy, if it was found, else undefined
  */
 function findCurrSection(id) {
+    // WARNING: window.location doesn't seem to be updated immediately after change.
     var secID = id || window.location.hash.slice(1);
 
     // find selected section

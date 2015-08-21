@@ -15,7 +15,6 @@ function addSection(form) {
 	// add section to data
 	journey.sections.push(section);
 	form.reset();
-	console.log(JSON.stringify(journey, null, '  '));
 
 	// push changes to server DB
 	updateJourney(function() {
@@ -31,7 +30,7 @@ function addSection(form) {
         $('#journey-sections').append('<li><a href="#' + panelID + '">' + section.name + '</a></li>');
 
         // update the adress hash ( and open the correct sidebar tab)
-	 	//sidebar.open(panelID);
+	 	sidebar.open(panelID);
 	 	window.location.hash = '#' + panelID;
 	});
 
@@ -61,4 +60,11 @@ function updateJourney(callback) {
 			console.log('couldn\'t update journey on DB: ' + errorThrown);
         }
     });
+};
+
+/**
+ * @desc downloads the journey (in a new tab/window)
+ */
+function downloadJourney() {
+	window.open('http://' + window.location.host + '/downloadJourney?id=' + journey._id);
 };

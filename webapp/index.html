@@ -34,6 +34,25 @@
         font-style: italic;
         font-size: 125%;
       }
+      .btn-file {
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-file input[type=file] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        min-width: 100%;
+        min-height: 100%;
+        font-size: 100px;
+        text-align: right;
+        filter: alpha(opacity=0);
+        opacity: 0;
+        outline: none;
+        background: white;
+        cursor: inherit;
+        display: block;
+      }
     </style>
   </head>
 
@@ -60,13 +79,24 @@
       <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6" id="tableCol">
-          <p class="subheading">...or select one below:</p>
-  	      <table id="journeysTbl" class="table table-hover hidden">
-  	        <thead>
-  	          <tr><td><b>stored journeys:</b></td></tr>
-  	        </thead>
-  	        <tbody id="journeysTblBody"></tbody>
-  	      </table>
+          <p class="subheading">...select one below...</p>
+          <table id="journeysTbl" class="table table-hover hidden">
+            <thead>
+              <tr><td><b>stored journeys:</b></td></tr>
+            </thead>
+            <tbody id="journeysTblBody"></tbody>
+          </table>
+        </div>
+        <div class="col-md-3"></div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          <p class="subheading">...or import one from your harddrive</p>
+          <span class="btn btn-default btn-file">
+              Browse <input type="file" onchange="importJourney(event)">
+          </span>
         </div>
         <div class="col-md-3"></div>
       </div>
@@ -76,6 +106,7 @@
     <script type="text/javascript" src="lib/js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="lib/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="lib/js/bootbox.min.js"></script>
+
     <script type="text/javascript" src="js/analytics.js"      defer=true></script>
     <script type="text/javascript" src="js/journey.js"        defer=true></script>
     <script type="text/javascript" src="js/journeyChooser.js" defer=true></script>

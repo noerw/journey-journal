@@ -61,6 +61,7 @@ sidebar.on('content', function(e) {
 
         // add the sections layers to drawnItems
     	for (var i = 0; i < section.locations.length; i++) {
+            console.log(JSON.stringify(section.locations[i]));
             var locProp = section.locations[i].properties;
 
 	        L.geoJson(section.locations[i], {

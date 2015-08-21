@@ -148,6 +148,28 @@ app.post('/updateJourney', function(req, res) {
     );
 });
 
+// TODO
+// returns the journey AND ITS PICTURES with the given id in the query
+// modified document: _id removed, picture blobs added
+app.get('/downloadJourney*', function(req, res) {
+    if(req.query.id) {
+        // find journey
+        Journey.findById(req.query.id, '-_id', function (error, journey) {
+            if (error) return console.error(error);
+            
+            // find all assigned images
+
+                // combine objects & send to callee
+                res.setHeader('Content-disposition', 'attachment; filename=' 
+                    + journey.name.split(' ').join('_') + '.json');
+                res.setHeader('Content-type', 'application/json');
+                res.json(journey);
+        });
+    } else {
+        res.send('specify a journey ID as in /getJourney?id=myID')
+    }
+});
+
 
 // returns the stored analytics
 // query syntax: ?ip=val

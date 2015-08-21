@@ -39,7 +39,7 @@ function loadJourney(id) {
         success: function(content, textStatus){
             journey = content;
             console.log('journey (' + journey.name + ') was loaded');
-            //console.log(JSON.stringify(journey, null, '  '));
+            console.log(JSON.stringify(journey, null, '  '));
             
             // make the loaded content visible
             loadJourneyContentsIntoSidebar();

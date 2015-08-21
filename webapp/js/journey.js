@@ -23,18 +23,12 @@ function Section(name, description, date, locations) {
 	this.locations   = locations   || [];
 };
 
-function Location(geojson, name, description, imgRef) {
-	var json                    = geojson || {};
-	json.properties.name        = name        || 'location name';
-	json.properties.description = description || 'location description';
-	json.properties.imgRef      = imgRef      || '';
+function Location(geojson, name, description, imgref) {
+	var json        = geojson    || {};
+	json.properties = {
+		name:        name        || 'location name',
+		description: description || 'location description',
+		imgref:      imgref      || 'location imgref'
+	};
 	return json;
-};
-
-
-function LocationOld(geojson, name, description, imgRef) {
-	this.geojson                        = geojson || {};
-	this.geojson.properties.name        = name        || 'location name';
-	this.geojson.properties.description = description || 'location description';
-	this.geojson.properties.imgRef      = imgRef      || '';
 };

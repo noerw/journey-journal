@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="lib/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="lib/css/bootstrap-datepicker3.min.css"/>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="stylesheet" href="lib/css/leaflet.css" />
     <link rel="stylesheet" href="lib/css/leaflet-sidebar.min.css" />
     <link rel="stylesheet" href="lib/css/leaflet.draw.css" />
 
@@ -43,6 +43,10 @@
           <h1 id="journey-title">No journey was loaded! :^(</h1>
           <p  id="journey-desc"></p>
           <ol id="journey-sections"></ol>
+          <br>
+          <button class="btn btn-default" onclick="downloadJourney()">
+            <i class="fa fa-download"></i> Download Journey
+          </button>
         </div>
 
         <div class="sidebar-pane" id="add-section">
@@ -85,7 +89,7 @@
     <script type="text/javascript" src="lib/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="lib/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="lib/js/bootbox.min.js"></script>
-    <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script type="text/javascript" src="lib/js/leaflet.js"></script>
     <script type="text/javascript" src="lib/js/leaflet.draw.js"></script>
     <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
 

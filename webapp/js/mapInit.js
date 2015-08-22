@@ -78,6 +78,7 @@ sidebar.on('content', function(e) {
 		draw = new L.Control.Draw({
 			edit: {	featureGroup: drawnItems },
 			draw: {
+                polyline: { shapeOptions: { color: 'blue' } },
 				polygon:   false,
 				circle:    false,
 				rectangle: false
@@ -97,8 +98,7 @@ sidebar.on('content', function(e) {
  * @param e draw event
  */
 map.on('draw:created', function(e) {
-
-	// open popup, asking for name and description, (adding an image?)
+	// open popup, asking for name and description, TODO:adding an image
     bootbox.dialog(newLocationPopup(function() {
         
         // get the entered values from the textbox
@@ -106,12 +106,12 @@ map.on('draw:created', function(e) {
         var desc = $('#locInputDesc').val();
 
     	// add the drawn layer as geojson to the journeys current section
-        var layer    = e.layer;
-        var location = new Location(layer.toGeoJSON(), name, desc);
+        var location = new Location(e.layer.toGeoJSON(), name, desc);
     	findCurrSection().locations.push(location);
-
+        
         // add layer to map
-        layer.bindPopup(locationPopup(name, desc));
+        var layer = new L.geoJson(location);
+        layer.bindPopup(locationPopup(location.properties.name, location.properties.description));
         drawnItems.addLayer(layer);
 
     	// push changes to the DB server
@@ -144,44 +144,24 @@ map.on('draw:edited', function (e) {
  * remove location in the database, when it was removed from the map
  */
 map.on('draw:deleted', function (e) {
-    /*
     var section = findCurrSection();
-    console.log('pre delete locations: ' + section.locations.length);
 
     e.layers.eachLayer(function(layer) {
         // find corresponding location in section & remove it
         for (var i = 0; i < section.locations.length; i++) {
             var jsonLayer = layer.toGeoJSON();
+            // this roundtrip is necessary, as we need the same data-format for comparision
+            // (convert the coordinate data from string to int)
+            var asdf     = new L.geoJson(section.locations[i]).toGeoJSON().features[0];
 
-            console.log(jsonLayer.properties === section.locations[i].properties);
-            console.log(jsonLayer.geometry.coordinates[0] == section.locations[i].geometry.coordinates[0]);
-            console.log(jsonLayer.geometry.coordinates[0]);
-            console.log(section.locations[i].geometry.coordinates[0]);
-
-            // check if equal, by comparing properties and first coordinate (jup; ugly)
-            if (jsonLayer.properties === section.locations[i].properties) {
-                var equal = false;
-                // coords are nested differently for points and polylines...
-                if ((jsonLayer.geometry.type === 'Point' &&
-                    jsonLayer.geometry.coordinates[0] == section.locations[i].geometry.coordinates[0])
-                    ||
-                    (jsonLayer.geometry.type === 'LineString' &&
-                    jsonLayer.geometry.coordinates[0][0] == section.locations[i].geometry.coordinates[0][0])) {
-                    equal = true;
-                }
-                if (equal) section.locations.splice(i, 1);
-            }
+            // check if equal, then remove
+            if (_.isEqual(jsonLayer, asdf)) section.locations.splice(i, 1);
         }
     });
-    
-    console.log('post delete locations: ' + section.locations.length);
-    // check if its also removed from the whole journey..
-    console.log('post delete locations (journey): ' + journey.sections[0].locations.length);
-    
+
     // push changes to db
     updateJourney();
     logToDB('location deleted');
-    */
 });
 
 /**

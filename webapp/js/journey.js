@@ -28,7 +28,7 @@ function Location(geojson, name, description, imgref) {
 	json.properties = {
 		name:        name        || 'location name',
 		description: description || 'location description',
-		imgref:      imgref      || 'location imgref'
+		imgref:      imgref      || ''
 	};
 	return json;
 };

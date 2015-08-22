@@ -11,7 +11,8 @@ var map = L.map('map', {
     center: [51.96, 7.624],
     zoom: 14,
     minZoom: 2,
-    maxZoom: 17
+    maxZoom: 17,
+    //TODO: max LatLon ?
 });
 
 // define basemaps
@@ -61,7 +62,6 @@ sidebar.on('content', function(e) {
 
         // add the sections layers to drawnItems
     	for (var i = 0; i < section.locations.length; i++) {
-            console.log(JSON.stringify(section.locations[i]));
             var locProp = section.locations[i].properties;
 
 	        L.geoJson(section.locations[i], {
@@ -87,6 +87,9 @@ sidebar.on('content', function(e) {
         // focus the map on the bounding box of all features in the section
         if (section.locations.length > 0) map.fitBounds(drawnItems.getBounds());
     }
+
+    // log action to DB server
+    logToDB('panel selected: ' + e.id);
 });
 
 /**
@@ -113,6 +116,7 @@ map.on('draw:created', function(e) {
 
     	// push changes to the DB server
     	updateJourney();
+        logToDB('location created: ' + e.layerType);
     }));
 });
 
@@ -133,19 +137,51 @@ map.on('draw:edited', function (e) {
 
     // push changes to db
     updateJourney();
+    logToDB('location edited');
 });
 
 /**
  * remove location in the database, when it was removed from the map
  */
 map.on('draw:deleted', function (e) {
+    /*
+    var section = findCurrSection();
+    console.log('pre delete locations: ' + section.locations.length);
+
     e.layers.eachLayer(function(layer) {
         // find corresponding location in section & remove it
+        for (var i = 0; i < section.locations.length; i++) {
+            var jsonLayer = layer.toGeoJSON();
 
+            console.log(jsonLayer.properties === section.locations[i].properties);
+            console.log(jsonLayer.geometry.coordinates[0] == section.locations[i].geometry.coordinates[0]);
+            console.log(jsonLayer.geometry.coordinates[0]);
+            console.log(section.locations[i].geometry.coordinates[0]);
 
+            // check if equal, by comparing properties and first coordinate (jup; ugly)
+            if (jsonLayer.properties === section.locations[i].properties) {
+                var equal = false;
+                // coords are nested differently for points and polylines...
+                if ((jsonLayer.geometry.type === 'Point' &&
+                    jsonLayer.geometry.coordinates[0] == section.locations[i].geometry.coordinates[0])
+                    ||
+                    (jsonLayer.geometry.type === 'LineString' &&
+                    jsonLayer.geometry.coordinates[0][0] == section.locations[i].geometry.coordinates[0][0])) {
+                    equal = true;
+                }
+                if (equal) section.locations.splice(i, 1);
+            }
+        }
     });
+    
+    console.log('post delete locations: ' + section.locations.length);
+    // check if its also removed from the whole journey..
+    console.log('post delete locations (journey): ' + journey.sections[0].locations.length);
+    
     // push changes to db
-    //updateJourney();
+    updateJourney();
+    logToDB('location deleted');
+    */
 });
 
 /**

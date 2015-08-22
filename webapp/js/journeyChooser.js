@@ -26,7 +26,7 @@
                 + content[i].name + '</td><tr>');
         }
 
-        if (content.length > 0) $('#journeysTbl').removeClass('hidden');
+        if (content.length > 0) $('#journeysList').removeClass('hidden');
       },
       error: function(xhr, textStatus, errorThrown){
       	console.log("naaw: " + errorThrown);

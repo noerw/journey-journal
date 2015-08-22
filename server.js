@@ -6,11 +6,16 @@
 
 'use strict';
 
-// change these values, if you need another port config
+/**
+ * server configuration
+ * logLevel: filter the action types, that should be logged (to DB & and on console)
+ *           valid values: 'SERVER-REQ', 'CLIENT-ACTION'
+ */
 var config = {
-    httpPort: 8080,
+    httpPort:  8080,
     mongoPort: 27017,
-    dbName: 'myJourneyJournal_dev'
+    dbName:    'myJourneyJournal_dev',
+    logLevel:  ['SERVER-REQ', 'CLIENT-ACTION']
 }
 
 var express    = require('express');
@@ -23,11 +28,6 @@ app.use(bodyParser.urlencoded({extended: true})); // enable processing of the re
 
 
 /* database schema for journeys */
-var locationSchema = mongoose.Schema({
-    //geojson:     {},
-
-});
-
 var sectionSchema = mongoose.Schema({
     name:        String,
     description: String,
@@ -110,13 +110,14 @@ app.get('/getJourney*', function(req, res) {
 
 // returns IDs and names of all stored journeys
 app.get('/getAllJourneys', function(req, res) {
+    // return only _id & name, sort by the last modified date
     Journey.find({}, '_id name').sort( {updated: -1} ).exec(function(error, journeys) {
         if (error) return console.error(error);
         res.json(journeys);
     });
 });
 
-// takes a json document via POST, which will be added to the database
+// takes a json document (in journey schema) via POST, which will be added to the database
 app.post('/addJourney', function(req, res) {
     var journey = new Journey({
         name: req.body.name,
@@ -160,7 +161,7 @@ app.get('/downloadJourney*', function(req, res) {
             // find all assigned images
 
                 // combine objects & send to callee
-                res.setHeader('Content-disposition', 'attachment; filename=' 
+                res.setHeader('Content-disposition', 'attachment; filename=journey_' 
                     + journey.name.split(' ').join('_') + '.json');
                 res.setHeader('Content-type', 'application/json');
                 res.json(journey);
@@ -174,7 +175,9 @@ app.get('/downloadJourney*', function(req, res) {
 // returns the stored analytics
 // query syntax: ?ip=val
 app.get('/getAnalytics*', function(req, res) {
+    // if an ip is queried, filter by its value, else query all entries
     var query = req.query.ip ? {ip: req.query.ip} : {};
+
     Analytics.find(query, function(error, analytics) {
         if (error) return console.error(error);
         res.json(analytics);
@@ -183,23 +186,29 @@ app.get('/getAnalytics*', function(req, res) {
 
 
 function logToAnalytics(ip, action, type) {
-    var analytic = new Analytics({
-        ip:        ip,
-        action:    action,
-        type:      type,
-        timestamp: new Date()
-    });
+    // only log, when enabled in config.logLevel
+    if (config.logLevel.indexOf(type) !== -1) {
 
-    analytic.save(function(error){
-        if(error) {
-            console.log('failed to save analytic from ' + ip +': ' + error);
-        } else {
-            console.log(analytic.timestamp + '  '
-                        + analytic.ip + '\t'
-                        + analytic.type + '\t'
-                        + analytic.action);
-        }
-    });
+        var analytic = new Analytics({
+            ip:        ip,
+            action:    action,
+            type:      type,
+            timestamp: new Date()
+        });
 
-    return analytic._id; // return the id of the new document
+        analytic.save(function(error){
+            if(error) {
+                console.log('failed to save analytic from ' + ip +': ' + error);
+            } else {
+                console.log(analytic.timestamp + '  '
+                            + analytic.ip + '\t'
+                            + analytic.type + '\t'
+                            + analytic.action);
+            }
+        });
+
+        return analytic._id; // return the id of the new document
+    }
+
+    return 'logging disabled for: ' + type;
 }

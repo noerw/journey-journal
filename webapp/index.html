@@ -25,11 +25,11 @@
         background: rgba(0, 0, 0, 0.1);
       }
       .row>*{ margin-bottom: 15px; }
-      p { padding: 15px; }
       h1, h5 { text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.8); }
       #tableCol {	margin-bottom: -10px; }
       #journeysTblBody tr { cursor: pointer; }
       .subheading { 
+        padding: 15px;
         font-weight: bold;
         font-style: italic;
         font-size: 125%;
@@ -76,13 +76,12 @@
         <div class="col-md-4"></div>
       </div>
 
-      <div class="row">
+      <div class="row hidden" id="journeysList">
         <div class="col-md-3"></div>
         <div class="col-md-6" id="tableCol">
-          <p class="subheading">...select one below...</p>
-          <table id="journeysTbl" class="table table-hover hidden">
+          <table class="table table-hover">
             <thead>
-              <tr><td><b>stored journeys:</b></td></tr>
+              <tr><td><p class="subheading">...select one below...</p></td></tr>
             </thead>
             <tbody id="journeysTblBody"></tbody>
           </table>
@@ -93,7 +92,7 @@
       <div class="row">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-          <p class="subheading">...or import one from your harddrive</p>
+          <p class="subheading">...or import one from your harddrive!</p>
           <span class="btn btn-default btn-file">
               Browse <input type="file" onchange="importJourney(event)">
           </span>

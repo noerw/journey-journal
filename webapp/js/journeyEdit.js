@@ -32,9 +32,11 @@ function addSection(form) {
         // update the adress hash ( and open the correct sidebar tab)
 	 	sidebar.open(panelID);
 	 	window.location.hash = '#' + panelID;
+		
+
+		logToDB('section added: ' + panelID);
 	});
 
-	logToDB('section added');
 	return false; // to supress the submit of the form
 };
 
@@ -67,4 +69,5 @@ function updateJourney(callback) {
  */
 function downloadJourney() {
 	window.open('http://' + window.location.host + '/downloadJourney?id=' + journey._id);
+	logToDB('journey downloaded: ' + journey._id);
 };

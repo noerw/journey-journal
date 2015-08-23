@@ -201,7 +201,7 @@ function logToAnalytics(ip, action, type) {
             if(error) {
                 console.log('failed to save analytic from ' + ip +': ' + error);
             } else {
-                console.log(analytic.timestamp + '  '
+                console.log(analytic.timestamp + '   '
                             + analytic.ip + '\t'
                             + analytic.type + '\t'
                             + analytic.action);

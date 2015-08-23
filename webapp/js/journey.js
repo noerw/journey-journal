@@ -39,12 +39,13 @@ function Location(geojson, name, description, imgref) {
  * @return the selected section from the local journeys copy, if it was found, else undefined
  */
 function findCurrSection(id) {
-    // WARNING: window.location doesn't seem to be updated immediately after change.
-    var secID = id || window.location.hash.slice(1);
+    // WARNING: window.location doesn't seem to be updated immediately after change
+    //          better provide id!
+    var sectionID = id || window.location.hash.slice(1);
 
     // find selected section
     for (var i = 0; i < journey.sections.length; i++) {
-        if (journey.sections[i]._id === secID) {
+        if (journey.sections[i]._id === sectionID) {
             return journey.sections[i];
         }
     }
@@ -53,7 +54,7 @@ function findCurrSection(id) {
 
 /**
  * @desc   
- * @param  location the location to which we compare
+ * @param  location the location we search for
  * @param  section  optional section in which to search. if not given, the current section will be looked up
  * @return the index-position in section.locations
  */

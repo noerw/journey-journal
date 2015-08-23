@@ -19,9 +19,9 @@ $(document).ready(function() {
     loadJourney(window.location.search.slice(4)); // 4 for '?id='
 });
 
-// open sidebar on the corresponding tab
-// needed for the links in the overview tab
+// open sidebar on the corresponding tab, when URL hash changes
 window.onhashchange = function(e) {
+    // only react to the links in the overview tab
     if (e.oldURL.search('#overview') !== -1) sidebar.open(window.location.hash.slice(1));
 };
 
@@ -77,3 +77,57 @@ function loadJourneyContentsIntoSidebar() {
         sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
     }
 };
+
+
+/*
+ * focus the map onto the geofeatures of a section, when a section is selected in the sidebar
+ * & re-init the draw control
+ */
+sidebar.on('content', function(e) {
+    // remove draw control & drawn items, if it exists
+    if (draw !== undefined) {
+        map.removeLayer(drawnItems);
+        draw.removeFrom(map);
+        drawnItems = new L.FeatureGroup();
+        draw       = undefined;
+    }
+
+    // omit tabs, that arent sections (via negative list)
+    var omitTabs = ['', 'overview', 'add-section'];
+    if (omitTabs.indexOf(e.id) === -1) {
+
+        // find selected section
+        var section = findCurrSection(e.id);
+
+        // add the sections layers to drawnItems
+        for (var i = 0; i < section.locations.length; i++) {
+            var locProp = section.locations[i].properties;
+
+            L.geoJson(section.locations[i], {
+                onEachFeature: function (feature, layer) { 
+                    // add popups
+                    layer.bindPopup(locationPopup(locProp.name, locProp.description, locProp.imgref));
+                    drawnItems.addLayer(layer); 
+                }
+            });
+        }
+
+        // init the draw control with the sections locations
+        drawnItems.addTo(map)
+        draw = new L.Control.Draw({
+            edit: { featureGroup: drawnItems },
+            draw: {
+                polyline: { shapeOptions: { color: 'blue' } },
+                polygon:   false,
+                circle:    false,
+                rectangle: false
+            }
+        }).addTo(map);
+
+        // focus the map on the bounding box of all features in the section
+        if (section.locations.length > 0) map.fitBounds(drawnItems.getBounds());
+    }
+
+    // log action to DB server
+    logToDB('panel selected: ' + e.id);
+});

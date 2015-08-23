@@ -32,14 +32,76 @@ function addSection(form) {
         // update the adress hash ( and open the correct sidebar tab)
 	 	sidebar.open(panelID);
 	 	window.location.hash = '#' + panelID;
-		
-
 		logToDB('section added: ' + panelID);
 	});
 
 	return false; // to supress the submit of the form
 };
 
+/**
+ * save a drawn layer to the current section of the journey, when it was created
+ * @param e draw event
+ */
+map.on('draw:created', function(e) {
+	// open popup, asking for name and description, TODO:adding an image
+    bootbox.dialog(newLocationPopup(function() {
+        
+    	// add the drawn layer as geojson to the journeys current section
+        var location = new Location(e.layer.toGeoJSON(),
+                                    $('#locInputTitle').val(),
+                                    $('#locInputDesc').val());
+    	findCurrSection().locations.push(location);
+        
+        // add layer to map
+        var layer = new L.geoJson(location);
+        layer.bindPopup(locationPopup(location.properties.name,
+                                      location.properties.description,
+                                      location.properties.imgref));
+        drawnItems.addLayer(layer);
+
+    	// push changes to the DB server
+    	updateJourney();
+        logToDB('location created: ' + e.layerType);
+    }));
+});
+
+/**
+ * update location in the database, when it was modified in the map
+ */
+map.on('draw:edited', function (e) {
+    // as there isn't any id given to the layer it's not possible
+    // to select the correct one in journey.sections.locations
+    // instead we replace all features, as we upload the whole journey anyway
+
+    var section = findCurrSection();
+    var i = 0;
+    drawnItems.eachLayer(function(layer) {
+        section.locations[i++] = layer.toGeoJSON();
+    });
+
+    // push changes to db
+    updateJourney();
+    logToDB('location edited');
+});
+
+/**
+ * remove location in the database, when it was removed from the map
+ */
+map.on('draw:deleted', function (e) {
+    var section = findCurrSection();
+  
+    e.layers.eachLayer(function(layer) {
+        // for each removed layer: find its index in the locations array,
+        var locationIndex = findLocation(layer.toGeoJSON(), section);
+        
+        // and remove it from the local journey
+        section.locations.splice(locationIndex, 1);
+    });
+
+    // push changes to db
+    updateJourney();
+    logToDB('location deleted');
+});
 
 /**
  * @desc  pushes changes on the journey to the DB server and updates its local version

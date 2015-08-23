@@ -74,6 +74,7 @@ database.once('open', function (callback) {
 /* http routing */
 // serve static content
 app.use('/img', express.static(__dirname + '/webapp/img'));
+app.use('/css', express.static(__dirname + '/webapp/css'));
 app.use('/js',  express.static(__dirname + '/webapp/js'));
 app.use('/lib', express.static(__dirname + '/webapp/lib'));
 
@@ -160,9 +161,9 @@ app.get('/downloadJourney*', function(req, res) {
             
             // find all assigned images
 
-                // combine objects & send to callee
+                // combine objects & send to callee as file
                 res.setHeader('Content-disposition', 'attachment; filename=journey_' 
-                    + journey.name.split(' ').join('_') + '.json');
+                    + journey.name.split(' ').join('_').substring(0, 26) + '.json');
                 res.setHeader('Content-type', 'application/json');
                 res.json(journey);
         });

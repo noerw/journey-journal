@@ -12,7 +12,7 @@ var map = L.map('map', {
     zoom: 14,
     minZoom: 2,
     maxZoom: 17,
-    //TODO: max LatLon ?
+    maxBounds: [[90, 180], [-90, -180]]
 });
 
 // define basemaps
@@ -26,17 +26,19 @@ var baseMaps = {
      "Watercolor": watercolorLayer,
      "Toner": tonerLayer,
 }
+watercolorLayer.addTo(map);
 
 // controls of the map
 var sidebar      = L.control.sidebar('sidebar').addTo(map);
 var layerControl = L.control.layers(baseMaps).addTo(map);
 L.control.scale().addTo(map);
 var drawnItems   = new L.FeatureGroup();
-var draw 		 = undefined;
+var draw         = undefined;
+L.drawLocal.draw.toolbar.buttons.polyline = 'Add a route to the current section';
+L.drawLocal.draw.toolbar.buttons.marker   = 'Add a marker to the current section';
+L.drawLocal.edit.toolbar.buttons.edit     = 'Edit locations';
+L.drawLocal.edit.toolbar.buttons.remove   = 'Delete locations';
 
-
-// misc init
-watercolorLayer.addTo(map);
 
 // events
 
@@ -131,7 +133,6 @@ map.on('draw:edited', function (e) {
     var section = findCurrSection();
     var i = 0;
     drawnItems.eachLayer(function(layer) {
-        // !! here we trust leaflet.draw to not change the order of the layers !!
         section.locations[i++] = layer.toGeoJSON();
     });
 
@@ -145,38 +146,16 @@ map.on('draw:edited', function (e) {
  */
 map.on('draw:deleted', function (e) {
     var section = findCurrSection();
-
+  
     e.layers.eachLayer(function(layer) {
-        // find corresponding location in section & remove it
-        for (var i = 0; i < section.locations.length; i++) {
-            var jsonLayer = layer.toGeoJSON();
-            // this roundtrip is necessary, as we need the same data-format for comparision
-            // (convert the coordinate data from string to int)
-            var asdf     = new L.geoJson(section.locations[i]).toGeoJSON().features[0];
-
-            // check if equal, then remove
-            if (_.isEqual(jsonLayer, asdf)) section.locations.splice(i, 1);
-        }
+        // for each removed layer: find its index in the locations array,
+        var locationIndex = findLocation(layer.toGeoJSON(), section);
+        
+        // and remove it from the local journey
+        section.locations.splice(locationIndex, 1);
     });
 
     // push changes to db
     updateJourney();
     logToDB('location deleted');
 });
-
-/**
- * helper function to find the currently selected section in the sidebar
- * @param id optional id of the section
- * @return the selected section from the local journeys copy, if it was found, else undefined
- */
-function findCurrSection(id) {
-    // WARNING: window.location doesn't seem to be updated immediately after change.
-    var secID = id || window.location.hash.slice(1);
-
-    // find selected section
-    for (var i = 0; i < journey.sections.length; i++) {
-        if (journey.sections[i]._id === secID) {
-            return journey.sections[i];
-        }
-    }
-}

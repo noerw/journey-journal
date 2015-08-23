@@ -38,11 +38,15 @@ function loadJourney(id) {
         timeout: 5000,
         success: function(content, textStatus){
             journey = content;
-            console.log('journey (' + journey.name + ') was loaded');
-            //console.log(JSON.stringify(journey, null, '  '));
-            
-            // make the loaded content visible
-            loadJourneyContentsIntoSidebar();
+            if (journey) {
+                console.log('journey (' + journey.name + ') was loaded');
+                //console.log(JSON.stringify(journey, null, '  '));
+                
+                // make the loaded content visible
+                loadJourneyContentsIntoSidebar();
+            } else {
+                console.error('no journey could be found!');
+            }
             
             // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
             sidebar.open(window.location.hash.slice(1));

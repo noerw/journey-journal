@@ -32,3 +32,42 @@ function Location(geojson, name, description, imgref) {
 	};
 	return json;
 };
+
+/**
+ * helper function to find the currently selected section in the sidebar
+ * @param id optional id of the section
+ * @return the selected section from the local journeys copy, if it was found, else undefined
+ */
+function findCurrSection(id) {
+    // WARNING: window.location doesn't seem to be updated immediately after change.
+    var secID = id || window.location.hash.slice(1);
+
+    // find selected section
+    for (var i = 0; i < journey.sections.length; i++) {
+        if (journey.sections[i]._id === secID) {
+            return journey.sections[i];
+        }
+    }
+}
+
+
+/**
+ * @desc   
+ * @param  location the location to which we compare
+ * @param  section  optional section in which to search. if not given, the current section will be looked up
+ * @return the index-position in section.locations
+ */
+function findLocation(location, section) {
+
+	var sec = section || findCurrSection();
+
+	// find corresponding location in section
+	for (var i = 0; i < sec.locations.length; i++) {
+	    // this roundtrip is necessary, as we need the same data-format for comparision
+	    // (convert the coordinate data from string to int)
+	    var convertedLoc = new L.geoJson(sec.locations[i]).toGeoJSON().features[0];
+
+	    // check if equal
+	    if (_.isEqual(location, convertedLoc)) return i;
+	}
+}

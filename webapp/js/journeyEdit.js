@@ -11,57 +11,88 @@
  * @param form DOM element of the new-section-form
  */
 function addSection(form) {
-	var section = new Section(form.inputTitle.value, form.inputDesc.value, form.inputDate.value);
-	// add section to data
-	journey.sections.push(section);
-	form.reset();
+    var section = new Section(form.inputTitle.value, form.inputDesc.value, form.inputDate.value);
+    // add section to data
+    journey.sections.push(section);
+    form.reset();
 
-	// push changes to server DB
-	updateJourney(function() {
-		// add section to sidebar (content, tab, overview), after the server responded
-		var panelID = journey.sections[journey.sections.length - 1]._id;
+    // push changes to server DB
+    updateJourney(function() {
+        // add section to sidebar (content, tab, overview), after the server responded
+        var panelID = journey.sections[journey.sections.length - 1]._id;
 
-		sidebar.addPanel(
-			panelID,
-			sbarTab(journey.sections.length),
-	 		sbarPanel(section.name, section.description, section.date)
-	 	);
+        sidebar.addPanel(
+            panelID,
+            sbarTab(journey.sections.length),
+            sbarPanel(section.name, section.description, section.date)
+        );
 
         $('#journey-sections').append('<li><a href="#' + panelID + '">' + section.name + '</a></li>');
 
         // update the adress hash ( and open the correct sidebar tab)
-	 	sidebar.open(panelID);
-	 	window.location.hash = '#' + panelID;
-		logToDB('section added: ' + panelID);
-	});
+        sidebar.open(panelID);
+        window.location.hash = '#' + panelID;
+        logToDB('section added: ' + panelID);
+    });
 
-	return false; // to supress the submit of the form
+    return false; // to supress the submit of the form
 };
+
+
+function addLocation(geojson, imgID) {
+    // add the drawn layer as geojson to the journeys current section
+    var location = new Location(geojson, $('#locInputTitle').val(), $('#locInputDesc').val(), imgID);
+    findCurrSection().locations.push(location);
+    
+    // add layer to map
+    var layer = new L.geoJson(location);
+    locationPopup(location.properties.name, location.properties.description, 
+        location.properties.imgID, function(popupHtml) {
+            layer.bindPopup(popupHtml);
+            drawnItems.addLayer(layer);
+        });
+
+    // push changes to the DB server
+    updateJourney();
+    logToDB('location added');
+}
 
 /**
  * save a drawn layer to the current section of the journey, when it was created
  * @param e draw event
  */
 map.on('draw:created', function(e) {
-	// open popup, asking for name and description, TODO:adding an image
+    // open popup, asking for name and description, adding an image
     bootbox.dialog(newLocationPopup(function() {
-        
-    	// add the drawn layer as geojson to the journeys current section
-        var location = new Location(e.layer.toGeoJSON(),
-                                    $('#locInputTitle').val(),
-                                    $('#locInputDesc').val());
-    	findCurrSection().locations.push(location);
-        
-        // add layer to map
-        var layer = new L.geoJson(location);
-        layer.bindPopup(locationPopup(location.properties.name,
-                                      location.properties.description,
-                                      location.properties.imgID));
-        drawnItems.addLayer(layer);
 
-    	// push changes to the DB server
-    	updateJourney();
-        logToDB('location created: ' + e.layerType);
+        var layer = e.layer.toGeoJSON();
+
+        // check if an image was added
+        if (lastImage.imgData !== '') {
+
+            // upload the image to the DB server
+            $.ajax({
+                type: 'POST',
+                data: lastImage,
+                url: 'http://' + window.location.host + '/addImage',
+                timeout: 5000,
+                success: function(data, textStatus) {
+                    logToDB('image added: ' + data);
+                    console.log('image uploaded: ' + data);
+
+                    // add the drawn layer as geojson to the journeys current section
+                    addLocation(layer, data);
+
+                },
+                error: function(xhr, textStatus, errorThrown){
+                    console.log('couldn\'t upload image to DB: ' + errorThrown);
+                }
+            });
+
+            lastImage.imgData = ''; // clear lastImage data
+        } else {
+            addLocation(layer, '');
+        }
     }));
 });
 
@@ -103,34 +134,22 @@ map.on('draw:deleted', function(e) {
     logToDB('location deleted');
 });
 
-function uploadImage(event, callback) {
-    var input  = event.target;
+
+// global object, buffering the last uploaded image
+var lastImage = { imgData: '' };
+
+/**
+ * loads an image from a file input
+ * @param event onchange event from the file input
+ */
+function addImage(event) {
     var reader = new FileReader();
     // read image
-    reader.readAsDataURL(input.files[0]);
-
-    reader.onload = function(e){
-        // push image to server
-	    $.ajax({
-	        type: 'POST',
-	        data: reader.result,
-	        url: 'http://' + window.location.host + '/addImage',
-	        timeout: 5000,
-	        success: function(data, textStatus) {
-				console.log('image uploaded: ' + data);
-
-        		// add returned imgID to the current section
-
-
-	            // execute callback when ajax is finished
-	            if (typeof callback === 'function') callback();
-	        },
-	        error: function(xhr, textStatus, errorThrown){
-				console.log('couldn\'t upload image to DB: ' + errorThrown);
-	        }
-	    });
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = function(){
+        lastImage.imgData = reader.result;
     };
-};
+};    
 
 
 /**
@@ -144,14 +163,14 @@ function updateJourney(callback) {
         url: 'http://' + window.location.host + '/updateJourney',
         timeout: 5000,
         success: function(data, textStatus) {
-        	journey = data;
-			console.log('journey updated to DB');
+            journey = data;
+            console.log('journey updated to DB');
 
             // execute callback when ajax is finished
             if (typeof callback === 'function') callback();
         },
         error: function(xhr, textStatus, errorThrown){
-			console.log('couldn\'t update journey on DB: ' + errorThrown);
+            console.log('couldn\'t update journey on DB: ' + errorThrown);
         }
     });
 };
@@ -160,6 +179,6 @@ function updateJourney(callback) {
  * @desc downloads the journey (in a new tab/window)
  */
 function downloadJourney() {
-	window.open('http://' + window.location.host + '/downloadJourney?id=' + journey._id);
-	logToDB('journey downloaded: ' + journey._id);
+    window.open('http://' + window.location.host + '/downloadJourney?id=' + journey._id);
+    logToDB('journey downloaded: ' + journey._id);
 };

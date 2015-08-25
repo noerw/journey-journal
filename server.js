@@ -23,9 +23,9 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 
 var app = express();
-app.use(bodyParser.urlencoded({extended: true, limit: '5mb' })); // enable processing of the received post content
 
-
+// enable processing of the received post content, limiting request size to 5 MB
+var urlEncodedParser = bodyParser.urlencoded({extended: true, limit: '5mb' }); 
 
 /* database schema for journeys */
 var sectionSchema = mongoose.Schema({
@@ -84,7 +84,7 @@ app.use('/js',  express.static(__dirname + '/webapp/js'));
 app.use('/lib', express.static(__dirname + '/webapp/lib'));
 
 // inserts an client side entry into Analytics
-app.post('/addAnalytics', function(req, res) {
+app.post('/addAnalytics', urlEncodedParser, function(req, res) {
     res.send(logToAnalytics(req.connection.remoteAddress, req.body.action, 'CLIENT-ACTION'));
 });
 
@@ -124,7 +124,7 @@ app.get('/getAllJourneys', function(req, res) {
 });
 
 // takes a json document (in journey schema) via POST, which will be added to the database
-app.post('/addJourney', function(req, res) {
+app.post('/addJourney', urlEncodedParser, function(req, res) {
     var journey = new Journey({
         name: req.body.name,
         description: req.body.description,
@@ -138,7 +138,7 @@ app.post('/addJourney', function(req, res) {
 });
 
 // updates the journey which is received
-app.post('/updateJourney', function(req, res) {
+app.post('/updateJourney', urlEncodedParser, function(req, res) {
     Journey.findByIdAndUpdate(
         req.body._id, 
         { 
@@ -156,8 +156,8 @@ app.post('/updateJourney', function(req, res) {
 });
 
 // TODO
-// returns the journey AND ITS PICTURES with the given id in the query
-// modified document: _id removed, picture blobs added
+// returns the journey AND ITS IMAGES with the given id in the query
+// modified document: _id removed, image blobs added
 app.get('/downloadJourney*', function(req, res) {
     if(req.query.id) {
         // find journey
@@ -178,9 +178,9 @@ app.get('/downloadJourney*', function(req, res) {
 });
 
 // adds an image to the image schema
-app.post('/addImage', function (req,res) {
+app.post('/addImage', urlEncodedParser, function (req,res) {
     var image = new Image({
-        data: req.body
+        imgData: req.body.imgData
     });
     image.save(function(error){
         if (error) return console.error(error);

@@ -108,8 +108,10 @@ sidebar.on('content', function(e) {
             L.geoJson(section.locations[i], {
                 onEachFeature: function (feature, layer) { 
                     // add popups
-                    layer.bindPopup(locationPopup(locProp.name, locProp.description, locProp.imgID));
-                    drawnItems.addLayer(layer); 
+                    locationPopup(locProp.name, locProp.description, locProp.imgID, function(popupHtml) {
+                        layer.bindPopup(popupHtml);
+                        drawnItems.addLayer(layer);
+                    });
                 }
             });
         }

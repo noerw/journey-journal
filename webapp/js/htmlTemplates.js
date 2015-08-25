@@ -11,21 +11,29 @@ function sbarTab(number) {
 };
 
 function sbarPanel(name, description, date) {
-    return '<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'
+    return ('<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'
+    	+  '<button class="btn btn-default btn-sm" onclick="">'
+    	+  '<i class="fa fa-edit"></i></button> '
+    	+  '<button class="btn btn-default btn-sm" onclick="">'
+    	+  '<i class="fa fa-trash-o"></i></button>')
     	.replace('%NAME%', name)
         .replace('%DESC%', description.replace(/\n/g, '<br>'))
         .replace('%DATE%', 'Date: ' + date.slice(0,10));
 };
 
-function locationPopup(name, description, imgref) {
+function locationPopup(name, description, imgID) {
 	var html =  '<h4>%NAME%</h4><p>%DESC%</p>'
     	.replace('%NAME%', name)
         .replace('%DESC%', description.replace(/\n/g, '<br>'));
     
-    if (typeof imgref !== 'undefined' && imgref != '') {
+    if (typeof imgID !== 'undefined' && imgID != '') {
     	// TODO: load image
-    	html += '<img src="" alt="' + name + ' image"/>';
+    	html += '<img id="' + imgID + '"alt="' + name + ' image"/><br>';
     }
+    html += '<button class="btn btn-default btn-sm" onclick="">'
+    	  + '<i class="fa fa-edit"></i></button> '
+    	  + '<button class="btn btn-default btn-sm" onclick="">'
+    	  + '<i class="fa fa-trash-o"></i></button>';
 
     return html;
 };
@@ -51,8 +59,8 @@ function newLocationPopup(okCallback) {
 
 			   + '<div class="form-group">'
                + '  <label class="col-sm-3 control-label">Add Image:</label>'
-               + '  <div class="col-sm-9">'
-               + '    <span class="form-control btn btn-default btn-file">Browse'
+               + '  <div class="col-sm-3">'
+               + '    <span class="form-control btn btn-default btn-file"><i class="fa fa-file-image-o"></i> Browse'
 	    	   + '    <input type="file" onchange="uploadImage(event)"></span>'
                + '</div></div><br>',
         buttons: {

@@ -84,11 +84,9 @@ function openJourney(param) {
     
     if (typeof param === 'string') { // executed from 'newJourney()'
         url += param + '#add-section'; 
-        logToDB('journey loaded: ' + param);
     }  else {                        // executed from tablerow click
         var id = $(param).data('id'); 
         url += id + '#overview';
-        logToDB('journey loaded: ' + id);
     }
 
 	// go to map page

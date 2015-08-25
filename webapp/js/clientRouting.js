@@ -44,6 +44,8 @@ function loadJourney(id) {
                 
                 // make the loaded content visible
                 loadJourneyContentsIntoSidebar();
+
+                logToDB('journey loaded: ' + id);
             } else {
                 console.error('no journey could be found!');
             }
@@ -80,8 +82,8 @@ function loadJourneyContentsIntoSidebar() {
 
 
 /*
- * focus the map onto the geofeatures of a section, when a section is selected in the sidebar
- * & re-init the draw control
+ * load the features of a section and focus the map onto them,
+ * when a section is selected in the sidebar & re-init the draw control
  */
 sidebar.on('content', function(e) {
     // remove draw control & drawn items, if it exists
@@ -92,7 +94,7 @@ sidebar.on('content', function(e) {
         draw       = undefined;
     }
 
-    // omit tabs, that arent sections (via negative list)
+    // omit tabs, that arent sections
     var omitTabs = ['', 'overview', 'add-section'];
     if (omitTabs.indexOf(e.id) === -1) {
 
@@ -106,7 +108,7 @@ sidebar.on('content', function(e) {
             L.geoJson(section.locations[i], {
                 onEachFeature: function (feature, layer) { 
                     // add popups
-                    layer.bindPopup(locationPopup(locProp.name, locProp.description, locProp.imgref));
+                    layer.bindPopup(locationPopup(locProp.name, locProp.description, locProp.imgID));
                     drawnItems.addLayer(layer); 
                 }
             });

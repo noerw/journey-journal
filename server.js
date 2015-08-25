@@ -23,7 +23,7 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 
 var app = express();
-app.use(bodyParser.urlencoded({extended: true})); // enable processing of the received post content
+app.use(bodyParser.urlencoded({extended: true, limit: '5mb' })); // enable processing of the received post content
 
 
 
@@ -42,6 +42,11 @@ var journeySchema = mongoose.Schema({
     updated:     { type: Date, default: Date.now }
 });
 var Journey = mongoose.model('Journey', journeySchema);
+
+var imageSchema = mongoose.Schema({
+    imgData:    String // image encoded as base64 string
+});
+var Image = mongoose.model('Images', imageSchema)
 
 
 /* database schema for analytics */
@@ -124,7 +129,7 @@ app.post('/addJourney', function(req, res) {
         name: req.body.name,
         description: req.body.description,
         updated: new Date(),
-    	sections: req.body.sections
+        sections: req.body.sections
     });
     journey.save(function(error){
         if (error) return console.error(error);
@@ -169,6 +174,29 @@ app.get('/downloadJourney*', function(req, res) {
         });
     } else {
         res.send('specify a journey ID as in /getJourney?id=myID')
+    }
+});
+
+// adds an image to the image schema
+app.post('/addImage', function (req,res) {
+    var image = new Image({
+        data: req.body
+    });
+    image.save(function(error){
+        if (error) return console.error(error);
+        res.send(image._id); // return the id of the new document
+    });
+});
+
+// returns the journey with the given id in the query
+app.get('/getImage*', function(req, res) {
+    if(req.query.id) {
+        Image.findById(req.query.id, function (error, image) {
+            if (error) return console.error(error);
+            res.json(image);
+        });
+    } else {
+        res.send('specify an image ID as in /getImage?id=myID')
     }
 });
 

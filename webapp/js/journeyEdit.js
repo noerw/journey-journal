@@ -56,7 +56,7 @@ map.on('draw:created', function(e) {
         var layer = new L.geoJson(location);
         layer.bindPopup(locationPopup(location.properties.name,
                                       location.properties.description,
-                                      location.properties.imgref));
+                                      location.properties.imgID));
         drawnItems.addLayer(layer);
 
     	// push changes to the DB server
@@ -68,7 +68,7 @@ map.on('draw:created', function(e) {
 /**
  * update location in the database, when it was modified in the map
  */
-map.on('draw:edited', function (e) {
+map.on('draw:edited', function(e) {
     // as there isn't any id given to the layer it's not possible
     // to select the correct one in journey.sections.locations
     // instead we replace all features, as we upload the whole journey anyway
@@ -87,7 +87,7 @@ map.on('draw:edited', function (e) {
 /**
  * remove location in the database, when it was removed from the map
  */
-map.on('draw:deleted', function (e) {
+map.on('draw:deleted', function(e) {
     var section = findCurrSection();
   
     e.layers.eachLayer(function(layer) {
@@ -103,6 +103,36 @@ map.on('draw:deleted', function (e) {
     logToDB('location deleted');
 });
 
+function uploadImage(event, callback) {
+    var input  = event.target;
+    var reader = new FileReader();
+    // read image
+    reader.readAsDataURL(input.files[0]);
+
+    reader.onload = function(e){
+        // push image to server
+	    $.ajax({
+	        type: 'POST',
+	        data: reader.result,
+	        url: 'http://' + window.location.host + '/addImage',
+	        timeout: 5000,
+	        success: function(data, textStatus) {
+				console.log('image uploaded: ' + data);
+
+        		// add returned imgID to the current section
+
+
+	            // execute callback when ajax is finished
+	            if (typeof callback === 'function') callback();
+	        },
+	        error: function(xhr, textStatus, errorThrown){
+				console.log('couldn\'t upload image to DB: ' + errorThrown);
+	        }
+	    });
+    };
+};
+
+
 /**
  * @desc  pushes changes on the journey to the DB server and updates its local version
  * @param callback function that is executed, after the ajax call succeeded
@@ -113,7 +143,7 @@ function updateJourney(callback) {
         data: journey,
         url: 'http://' + window.location.host + '/updateJourney',
         timeout: 5000,
-        success: function(data, textStatus ){
+        success: function(data, textStatus) {
         	journey = data;
 			console.log('journey updated to DB');
 

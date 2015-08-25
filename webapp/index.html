@@ -51,7 +51,9 @@
   		    <div class="input-group" submit="newJourney()">
   		      <input id="newJourneyTxt" type="text" class="form-control" placeholder="Name...">
   		      <span class="input-group-btn">
-  		        <button id="newJourneyBtn" class="btn btn-success" type="button" onclick="newJourney()">new journey</button>
+  		        <button id="newJourneyBtn" class="btn btn-success" type="button" onclick="newJourney()">
+                <i class="fa fa-plane"></i> new journey
+              </button>
   		      </span>
   		    </div><!-- /input-group -->
   	    </div><!-- /col -->
@@ -76,7 +78,7 @@
         <div class="col-md-6">
           <p class="subheading">...or import one from your harddrive!</p>
           <span class="btn btn-default btn-file">
-              Browse <input type="file" onchange="importJourney(event)">
+              <i class="fa fa-folder-open"></i> Browse <input type="file" onchange="importJourney(event)">
           </span>
         </div>
         <div class="col-md-3"></div>

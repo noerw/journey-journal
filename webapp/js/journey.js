@@ -23,12 +23,12 @@ function Section(name, description, date, locations) {
 	this.locations   = locations   || [];
 };
 
-function Location(geojson, name, description, imgref) {
+function Location(geojson, name, description, imgID) {
 	var json        = geojson    || {};
 	json.properties = {
 		name:        name        || 'location name',
 		description: description || 'location description',
-		imgref:      imgref      || ''
+		imgID:       imgID       || ''
 	};
 	return json;
 };

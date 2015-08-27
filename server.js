@@ -85,14 +85,14 @@ app.use('/lib', express.static(__dirname + '/webapp/lib'));
 
 // inserts an client side entry into Analytics
 app.post('/addAnalytics', urlEncodedParser, function(req, res) {
-    res.send(logToAnalytics(req.connection.remoteAddress, req.body.action, 'CLIENT-ACTION'));
+    res.send(logToAnalytics(req.ip, req.body.action, 'CLIENT-ACTION'));
 });
 
 
 // code which is executed on every (non static) request
 app.use(function(req, res, next) {
     // log requests in analytics schema
-    logToAnalytics(req.connection.remoteAddress, req.method + ' ' + req.url, 'SERVER-REQ');
+    logToAnalytics(req.ip, req.method + ' ' + req.url, 'SERVER-REQ');
 
     // allow CORS
     //res.header('Access-Control-Allow-Origin', '*');

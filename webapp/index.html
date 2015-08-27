@@ -21,11 +21,12 @@
         text-align: center;
         background: #000000 url("img/watercolor.jpg");
       }
-      .row {
+      .box {
         margin-top: 20px;
         background: rgba(0, 0, 0, 0.1);
       }
       .row>*{ margin-bottom: 15px; }
+      .header { margin: 33px; }
       h1, h5 { text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.8); }
       #tableCol { margin-bottom: -10px; }
       #journeysTblBody tr { cursor: pointer; }
@@ -41,10 +42,12 @@
   <body>
     <div class="container-fluid">
 
-      <h1>my journey journal</h1>
-      <h5>the awesome app to document your traveling</h5>
-      
-      <div class="row">
+      <div class="row header">
+        <h1>my journey journal</h1>
+        <h5>the awesome app to document your traveling</h5>
+      </div>
+
+      <div class="row box">
         <p class="subheading">To start, create a new journey...</p>
         <div class="col-md-4"></div>
         <div class="col-md-4">
@@ -60,7 +63,7 @@
         <div class="col-md-4"></div>
       </div>
 
-      <div class="row hidden" id="journeysList">
+      <div class="row box hidden" id="journeysList">
         <div class="col-md-3"></div>
         <div class="col-md-6" id="tableCol">
           <table class="table table-hover">
@@ -73,7 +76,7 @@
         <div class="col-md-3"></div>
       </div>
 
-      <div class="row">
+      <div class="row box">
         <div class="col-md-3"></div>
         <div class="col-md-6">
           <p class="subheading">...or import one from your harddrive!</p>

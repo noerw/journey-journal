@@ -1,0 +1,14 @@
+- add images to import/export
+
+- edit / delete functionality
+	- journey
+	- section
+	- location
+
+- back to startpage button
+
+- close button on sidebar (update sidebar?)
+
+- rollout
+	- DB name
+	- readme (install, config, run, libraries, license, names?)

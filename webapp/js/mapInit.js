@@ -17,10 +17,18 @@ var map = L.map('map', {
 
 // define basemaps
 var osmLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 });
-var watercolorLayer = new L.StamenTileLayer("watercolor");
-var tonerLayer      = new L.StamenTileLayer("toner");
+var attributionString = 'Map tiles by <a href="http://stamen.com/">Stamen Design</a>, '
+    + 'under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. '
+    + 'Data by <a href="http://openstreetmap.org/">OpenStreetMap</a>, '
+    + 'under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
+var watercolorLayer = new L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg', {
+    attribution: attributionString
+});
+var tonerLayer = new L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {
+    attribution:  attributionString
+});
 var baseMaps = {
      "Open Street Map": osmLayer,
      "Watercolor": watercolorLayer,

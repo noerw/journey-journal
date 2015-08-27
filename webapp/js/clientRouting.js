@@ -74,6 +74,7 @@ function loadJourneyContentsIntoSidebar() {
 
         // add to overview
         $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
+        
         // add sidebar panel
         var panelContent = sbarPanel(section.name, section.description.replace(/\n/g, '<br>'), section.date);
         sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
@@ -82,7 +83,7 @@ function loadJourneyContentsIntoSidebar() {
 
 
 /*
- * load the features of a section and focus the map onto them,
+ * load the features of a section into the map and focus them,
  * when a section is selected in the sidebar & re-init the draw control
  */
 sidebar.on('content', function(e) {
@@ -107,29 +108,34 @@ sidebar.on('content', function(e) {
 
             L.geoJson(section.locations[i], {
                 onEachFeature: function (feature, layer) { 
+                    var index = i; // keep index for asynchronous executionorder
+
                     // add popups
                     locationPopup(locProp.name, locProp.description, locProp.imgID, function(popupHtml) {
                         layer.bindPopup(popupHtml);
                         drawnItems.addLayer(layer);
+
+                        // focus the map onto the loaded features
+                        // execute this only once after all the items have been added
+                        if (index === section.locations.length - 1) {
+                            map.fitBounds(drawnItems.getBounds());
+                        }
                     });
                 }
             });
         }
-
+        
         // init the draw control with the sections locations
         drawnItems.addTo(map)
         draw = new L.Control.Draw({
             edit: { featureGroup: drawnItems },
             draw: {
-                polyline: { shapeOptions: { color: 'blue' } },
+                polyline:  { shapeOptions: { color: 'blue' } },
                 polygon:   false,
                 circle:    false,
                 rectangle: false
             }
         }).addTo(map);
-
-        // focus the map on the bounding box of all features in the section
-        if (section.locations.length > 0) map.fitBounds(drawnItems.getBounds());
     }
 
     // log action to DB server

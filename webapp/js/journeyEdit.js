@@ -38,23 +38,27 @@ function addSection(form) {
     return false; // to supress the submit of the form
 };
 
-
+/**
+ * @desc  adds a new location to the current section, and pushes the change to the DB server
+ * @param geojson geojson of the new location
+ * @param imgID id of the image that should be shown in the popup
+ */
 function addLocation(geojson, imgID) {
     // add the drawn layer as geojson to the journeys current section
     var location = new Location(geojson, $('#locInputTitle').val(), $('#locInputDesc').val(), imgID);
     findCurrSection().locations.push(location);
     
-    // add layer to map
-    var layer = new L.geoJson(location);
+    // create popup, then add the layer to the map & update the DB
     locationPopup(location.properties.name, location.properties.description, 
         location.properties.imgID, function(popupHtml) {
+            var layer = new L.geoJson(location);
             layer.bindPopup(popupHtml);
             drawnItems.addLayer(layer);
-        });
 
-    // push changes to the DB server
-    updateJourney();
-    logToDB('location added');
+            // push changes to the DB server
+            updateJourney();
+            logToDB('location added');
+        });
 }
 
 /**
@@ -139,7 +143,7 @@ map.on('draw:deleted', function(e) {
 var lastImage = { imgData: '' };
 
 /**
- * loads an image from a file input
+ * loads an image from a file input (called on change of the file input)
  * @param event onchange event from the file input
  */
 function addImage(event) {

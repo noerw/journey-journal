@@ -105,10 +105,10 @@ app.get('/journey', function(req, res) { res.sendFile(__dirname + '/webapp/map.h
 // returns the journey with the given id in the query
 app.get('/getJourney*', function(req, res) {
     if(req.query.id) {
-    	Journey.findById(req.query.id, function (error, journey) {
+        Journey.findById(req.query.id, function (error, journey) {
             if (error) return console.error(error);
             res.json(journey);
-    	});
+        });
     } else {
         res.send('specify a journey ID as in /getJourney?id=myID')
     }

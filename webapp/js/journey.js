@@ -11,26 +11,26 @@
 var journey = {};
 
 function Journey(name, description, sections) {
-	this.name        = name        || 'journey title';
-	this.description = description || 'journey description';
-	this.sections    = sections    || [];
+    this.name        = name        || 'journey title';
+    this.description = description || 'journey description';
+    this.sections    = sections    || [];
 };
 
 function Section(name, description, date, locations) {
-	this.name        = name        || 'section title';
-	this.description = description || 'enter a description..';
-	this.date        = date        || '2015-08-23';
-	this.locations   = locations   || [];
+    this.name        = name        || 'section title';
+    this.description = description || 'enter a description..';
+    this.date        = date        || '2015-08-23';
+    this.locations   = locations   || [];
 };
 
 function Location(geojson, name, description, imgID) {
-	var json        = geojson    || {};
-	json.properties = {
-		name:        name        || 'location name',
-		description: description || 'location description',
-		imgID:       imgID       || ''
-	};
-	return json;
+    var json        = geojson    || {};
+    json.properties = {
+        name:        name        || 'location name',
+        description: description || 'location description',
+        imgID:       imgID       || ''
+    };
+    return json;
 };
 
 /**
@@ -60,15 +60,15 @@ function findCurrSection(id) {
  */
 function findLocation(location, section) {
 
-	var sec = section || findCurrSection();
+    var sec = section || findCurrSection();
 
-	// find corresponding location in section
-	for (var i = 0; i < sec.locations.length; i++) {
-	    // this roundtrip is necessary, as we need the same data-format for comparision
-	    // (convert the coordinate data from string to int)
-	    var convertedLoc = new L.geoJson(sec.locations[i]).toGeoJSON().features[0];
+    // find corresponding location in section
+    for (var i = 0; i < sec.locations.length; i++) {
+        // this roundtrip is necessary, as we need the same data-format for comparision
+        // (convert the coordinate data from string to int)
+        var convertedLoc = new L.geoJson(sec.locations[i]).toGeoJSON().features[0];
 
-	    // check if equal
-	    if (_.isEqual(location, convertedLoc)) return i;
-	}
+        // check if equal
+        if (_.isEqual(location, convertedLoc)) return i;
+    }
 }

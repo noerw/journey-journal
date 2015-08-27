@@ -1,5 +1,5 @@
 /**  
-* @desc   gets all stored journeys and lets the user select or create a new one
+* @desc   gets all stored journeys and lets the user select, import, or create a new one
 * @author Norwin Roosen
 * @date   150822
 */
@@ -12,25 +12,25 @@
  $(document).ready(function() {
     // ajax stored journeys
     $.ajax({
-      type: 'GET',
-      dataType: 'json',
-      url: 'http://' + window.location.host + '/getAllJourneys',
-      timeout: 5000,
-      success: function(content, textStatus){
-        // add the loaded items to the table
-        // each journeys id is stored in the table rows data-id attribute
-        // add a button to each row & register loadJourney() there
-        for (var i = 0; i < content.length; i++) {
-            $('#journeysTblBody').append('<tr onclick="openJourney(this)" data-id="' 
-                + content[i]._id + '"><td>'
-                + content[i].name + '</td><tr>');
-        }
+        type: 'GET',
+        dataType: 'json',
+        url: 'http://' + window.location.host + '/getAllJourneys',
+        timeout: 5000,
+        success: function(content, textStatus){
+            // add the loaded items to the table
+            // each journeys id is stored in the table rows data-id attribute
+            // add a button to each row & register loadJourney() there
+            for (var i = 0; i < content.length; i++) {
+                $('#journeysTblBody').append('<tr onclick="openJourney(this)" data-id="' 
+                    + content[i]._id + '"><td>'
+                    + content[i].name + '</td><tr>');
+            }
 
-        if (content.length > 0) $('#journeysList').removeClass('hidden');
-      },
-      error: function(xhr, textStatus, errorThrown){
-      	console.log("naaw: " + errorThrown);
-      }
+            if (content.length > 0) $('#journeysList').removeClass('hidden');
+        },
+        error: function(xhr, textStatus, errorThrown){
+            console.log("naaw: " + errorThrown);
+        }
     });
 });
 
@@ -38,9 +38,9 @@
  * creates a new journey and loads it
  */
 function newJourney() {
-  	// get name from textfield
-  	var name = $('#newJourneyTxt').val();
-  	if (!name) return bootbox.alert({ size: 'small', message: 'Please enter a name!' });
+    // get name from textfield
+    var name = $('#newJourneyTxt').val();
+    if (!name) return bootbox.alert({ size: 'small', message: 'Please enter a name!' });
 
     bootbox.dialog({
         title: 'Journey description',
@@ -80,7 +80,7 @@ function newJourney() {
  * @param a string containing the journeys ID, or the corresponding table row DOM element
  */
 function openJourney(param) {
-	var url = 'http://' + window.location.host + '/journey?id=';
+    var url = 'http://' + window.location.host + '/journey?id=';
     
     if (typeof param === 'string') { // executed from 'newJourney()'
         url += param + '#add-section'; 
@@ -89,7 +89,7 @@ function openJourney(param) {
         url += id + '#overview';
     }
 
-	// go to map page
+    // go to map page
     window.location = url;
 };
 

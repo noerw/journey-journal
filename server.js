@@ -21,6 +21,7 @@ var config = {
 var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+var async      = require('async');
 
 var app = express();
 
@@ -155,27 +156,60 @@ app.post('/updateJourney', urlEncodedParser, function(req, res) {
     );
 });
 
-// TODO
-// returns the journey AND ITS IMAGES with the given id in the query
-// modified document: _id removed, image blobs added
-app.get('/downloadJourney*', function(req, res) {
-    if(req.query.id) {
-        // find journey
-        Journey.findById(req.query.id, '-_id', function (error, journey) {
-            if (error) return console.error(error);
-            
-            // find all assigned images
 
-                // combine objects & send to callee as file
-                res.setHeader('Content-disposition', 'attachment; filename=journey_' 
-                    + journey.name.split(' ').join('_').substring(0, 26) + '.json');
-                res.setHeader('Content-type', 'application/json');
-                res.json(journey);
+// returns the journey and its images with the given id in the query
+// returned document structure: {journey: {}, images: [] }, journey without _id
+app.get('/exportJourney*', function(req, res) {
+    if(req.query.id) {
+        // if an id is given in the URL query, execute the following async funtions in series
+        async.waterfall( [
+            // find the journey
+            function(callback) {
+                Journey.findById(req.query.id, '-_id', function(err, journey) {
+                    if (err) return callback(err, null);
+                    callback(null, journey);
+                });
+            },
+
+            // extract all imageIDs used & find the corresponding images
+            function(journey, callback) {
+            
+                var imageIDs = [];
+                for (var i = 0; i < journey.sections.length; i++) {
+                    var section = journey.sections[i];
+                    for (var k = 0; k < section.locations.length; k++) {
+                        var imageID = section.locations[k].properties.imgID;
+                        if (imageID != '') imageIDs.push(imageID);
+                    }
+                }
+
+                var images = [];
+                async.each(imageIDs, function(item, imageCallback) {
+                    Image.findById(item, function(err, image) {
+                        if (err) return imageCallback(err);
+                        images.push(image);
+                        imageCallback(null);
+                    });
+                }, function (err) {
+                    if (err) callback(err);
+                    callback(null, journey, images);
+                });
+            }
+
+        // catch errors, or respond with an combined export object as file 
+        ], function (err, journey, images) {
+            if (err) return console.error(err);
+
+            var exportJourney = { journey: journey, images: images };
+
+            res.setHeader('Content-disposition', 'attachment; filename=journey_' 
+                + exportJourney.journey.name.split(' ').join('_').substring(0, 26) + '.json');
+            res.setHeader('Content-type', 'application/json');
+            res.json(exportJourney);
         });
-    } else {
-        res.send('specify a journey ID as in /getJourney?id=myID')
     }
 });
+
 
 // adds an image to the image schema
 app.post('/addImage', urlEncodedParser, function (req,res) {

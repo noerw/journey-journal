@@ -183,6 +183,6 @@ function updateJourney(callback) {
  * @desc downloads the journey (in a new tab/window)
  */
 function downloadJourney() {
-    window.open('http://' + window.location.host + '/downloadJourney?id=' + journey._id);
+    window.open('http://' + window.location.host + '/exportJourney?id=' + journey._id);
     logToDB('journey downloaded: ' + journey._id);
 };

@@ -1,8 +1,6 @@
-- add images to import/export
-	- server
-	- client
-
 - flickr implementation
+	- add geodata to images?
+	- accounts?!
 
 - edit / delete functionality
 	- journey
@@ -18,6 +16,7 @@
 	- rework addPanel()
 
 - rework ajax calls using promises...?
+	- encapsulate!
 
 -define location DB schema
 

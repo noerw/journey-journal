@@ -124,34 +124,22 @@ app.get('/getAllJourneys', function(req, res) {
     });
 });
 
-// takes a json document (in journey schema) via POST, which will be added to the database
-app.post('/addJourney', urlEncodedParser, function(req, res) {
-    var journey = new Journey({
-        name: req.body.name,
-        description: req.body.description,
-        updated: new Date(),
-        sections: req.body.sections
-    });
-    journey.save(function(error){
-        if (error) return console.error(error);
-        res.send(journey._id); // return the id of the new document
-    });
-});
 
-// updates the journey which is received
+// adds OR updates the journey which is received via POST to the DB
 app.post('/updateJourney', urlEncodedParser, function(req, res) {
+    var id = req.body._id || new mongoose.mongo.ObjectID();
     Journey.findByIdAndUpdate(
-        req.body._id, 
+        id,
         { 
-            name: req.body.name,
+            name:        req.body.name,
             description: req.body.description,
-            sections: req.body.sections,
-            updated: new Date()
+            sections:    req.body.sections || [],
+            updated:     new Date()
         },
-        { new: true },
-        function(error, result) {
-            if (error) return console.error(error);
-            res.send(result);
+        { upsert: true, new: true },
+        function(err, journey) {
+            if (err) return console.error(err);
+            res.send(journey);
         }
     );
 });
@@ -165,7 +153,7 @@ app.get('/exportJourney*', function(req, res) {
         async.waterfall( [
             // find the journey
             function(callback) {
-                Journey.findById(req.query.id, '-_id', function(err, journey) {
+                Journey.findById(req.query.id, function(err, journey) {
                     if (err) return callback(err, null);
                     callback(null, journey);
                 });
@@ -190,7 +178,7 @@ app.get('/exportJourney*', function(req, res) {
                         images.push(image);
                         imageCallback(null);
                     });
-                }, function (err) {
+                }, function(err) {
                     if (err) callback(err);
                     callback(null, journey, images);
                 });
@@ -207,26 +195,31 @@ app.get('/exportJourney*', function(req, res) {
             res.setHeader('Content-type', 'application/json');
             res.json(exportJourney);
         });
+    } else {
+        res.send('specify a journey ID as in /exportJourney?id=myID')
     }
 });
 
 
 // adds an image to the image schema
 app.post('/addImage', urlEncodedParser, function (req,res) {
-    var image = new Image({
-        imgData: req.body.imgData
-    });
-    image.save(function(error){
-        if (error) return console.error(error);
-        res.send(image._id); // return the id of the new document
-    });
+    var id = req.body._id || new mongoose.mongo.ObjectID();
+    Image.findByIdAndUpdate(
+        id,
+        { imgData: req.body.imgData },
+        { upsert: true, new: true },
+        function(err, image) {
+            if (err) return console.error(err);
+            res.send(image._id);
+        }
+    );
 });
 
 // returns the journey with the given id in the query
 app.get('/getImage*', function(req, res) {
     if(req.query.id) {
-        Image.findById(req.query.id, function (error, image) {
-            if (error) return console.error(error);
+        Image.findById(req.query.id, function (err, image) {
+            if (err) return console.error(err);
             res.json(image);
         });
     } else {

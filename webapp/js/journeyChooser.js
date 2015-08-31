@@ -55,14 +55,14 @@ function newJourney() {
                     $.ajax({
                         type: 'POST',
                         data: new Journey(name, $('#descTxtArea').val()),
-                        url: 'http://' + window.location.host + '/addJourney',
+                        url: 'http://' + window.location.host + '/updateJourney',
                         timeout: 5000,
                         success: function(data, textStatus ){
                             console.log('new journey was saved to DB');
                             // store analytic
-                            logToDB('journey created: ' + data);
+                            logToDB('journey created: ' + data._id);
                             // load the new route
-                            openJourney(data);
+                            openJourney(data._id);
                         },
                         error: function(xhr, textStatus, errorThrown){
                             console.log("couldn't create new journey on DB: " + errorThrown);
@@ -94,7 +94,7 @@ function openJourney(param) {
 };
 
 /**
- * imports a journey from an uploaded file
+ * imports a journey & images from a json file to the database
  * @param event the onchange event from the input field
  */
 function importJourney(event) {
@@ -102,24 +102,58 @@ function importJourney(event) {
     var reader = new FileReader();
     reader.readAsText(input.files[0]);
 
-    // push the loaded file to the DB server & open the journey
+    // extract journey & images from the file
+    // and push them seperately to the server
     reader.onload = function(){
         var json = JSON.parse(reader.result);
-        $.ajax({
-            type: 'POST',
-            data: json,
-            url: 'http://' + window.location.host + '/addJourney',
-            timeout: 5000,
-            success: function(data, textStatus ){
-                console.log('new journey was saved to DB');
-                // store analytic
-                logToDB('journey imported: ' + data);
-                // load the new route
-                openJourney(data);
+        
+        async.parallel([
+            // add journey to db
+            function(callback) {
+                $.ajax({
+                    type: 'POST',
+                    data: json.journey,
+                    url: 'http://' + window.location.host + '/updateJourney',
+                    timeout: 5000,
+                    success: function(data, textStatus) {
+                        callback(null, data);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        callback(errorThrown, null);
+                    }
+                });
             },
-            error: function(xhr, textStatus, errorThrown){
-                console.log("couldn't create new journey on DB: " + errorThrown);
+
+            // add images to db
+            function(callback) {
+                async.each(json.images, function(item, imageCallback) {
+                    $.ajax({
+                        type: 'POST',
+                        data: item,
+                        url: 'http://' + window.location.host + '/addImage',
+                        timeout: 5000,
+                        success: function(data, textStatus) {
+                            imageCallback(null);
+                        },
+                        error: function(xhr, textStatus, errorThrown){
+                            imageCallback(errorThrown);
+                        }
+                    });
+                }, function(err) {
+                    if (err) return callback(err, null);
+                    callback(null, null);
+                });
             }
+        // final callback, called when all ajax calls are complete
+        ], function(err, results) {
+            if (err) return console.error('error while importing journey: ' + err);
+            logToDB('journey imported: ' + json.journey._id);
+            console.log(results[0]._id);
+            openJourney(json.journey._id);
         });
+
+
+
+
     };
 };

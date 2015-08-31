@@ -39,6 +39,9 @@ function locationPopup(name, description, imgID, callback) {
             timeout: 5000,
             success: function(content, textStatus){
                 html += '<img src="' + content.imgData + '" alt="' + name + '_image"/><br><br>';
+                html2 = '<button class="btn btn-primary btn-sm" onclick="">'
+                      + '<i class="fa fa-cloud-upload"></i> upload image to flickr</button> '
+                      + html2;
 
                 // execute callback and pass it the generated html
                 if (typeof callback === 'function') callback(html + html2);

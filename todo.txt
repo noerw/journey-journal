@@ -9,11 +9,9 @@
 
 ==========================================================================
 
-- back to startpage button
-	- home icon button on overview tab?
-
-- close button on sidebar (update sidebar?)
-	- rework addPanel()
+- close button on sidebar 
+	- update sidebar
+		- rework addPanel()
 
 - rework ajax calls using promises...?
 	- encapsulate!
@@ -21,7 +19,7 @@
 -define location DB schema
 
 - rollout
-	- DB name
+	- change DB name
 	- readme (install, config, run, libraries, license, names?)
 	- github push
 	

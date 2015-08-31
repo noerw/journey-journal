@@ -21,7 +21,7 @@
             // each journeys id is stored in the table rows data-id attribute
             // add a button to each row & register loadJourney() there
             for (var i = 0; i < content.length; i++) {
-                $('#journeysTblBody').append('<tr onclick="openJourney(this)" data-id="' 
+                $('#journeysTblBody').append('<tr onclick="openJourney(this, \'overview\')" data-id="' 
                     + content[i]._id + '"><td>'
                     + content[i].name + '</td><tr>');
             }
@@ -62,7 +62,7 @@ function newJourney() {
                             // store analytic
                             logToDB('journey created: ' + data._id);
                             // load the new route
-                            openJourney(data._id);
+                            openJourney(data._id, 'add-section');
                         },
                         error: function(xhr, textStatus, errorThrown){
                             console.log("couldn't create new journey on DB: " + errorThrown);
@@ -77,17 +77,18 @@ function newJourney() {
 
 /**
  * opens a journey
- * @param a string containing the journeys ID, or the corresponding table row DOM element
+ * @param param a string containing the journeys ID, or the corresponding table row DOM element
+ * @param tab   string containing the id of the tab that will be loaded ('overview' or 'add-section')
  */
-function openJourney(param) {
+function openJourney(param, tab) {
     var url = 'http://' + window.location.host + '/journey?id=';
     
     if (typeof param === 'string') { // executed from 'newJourney()'
-        url += param + '#add-section'; 
+        url += param;
     }  else {                        // executed from tablerow click
-        var id = $(param).data('id'); 
-        url += id + '#overview';
+        url += $(param).data('id');
     }
+    url += '#' + tab;
 
     // go to map page
     window.location = url;
@@ -149,7 +150,7 @@ function importJourney(event) {
             if (err) return console.error('error while importing journey: ' + err);
             logToDB('journey imported: ' + json.journey._id);
             console.log(results[0]._id);
-            openJourney(json.journey._id);
+            openJourney(json.journey._id, 'overview');
         });
 
 

@@ -117,7 +117,7 @@ sidebar.on('content', function(e) {
 
                         // focus the map onto the loaded features
                         // execute this only once after all the items have been added
-                        if (index === section.locations.length - 1) {
+                        if (drawnItems.getLayers().length === section.locations.length) {
                             map.fitBounds(drawnItems.getBounds());
                         }
                     });

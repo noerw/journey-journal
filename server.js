@@ -15,18 +15,38 @@ var config = {
     httpPort:  8080,
     mongoPort: 27017,
     dbName:    'myJourneyJournal_dev',
-    logLevel:  ['SERVER-REQ', 'CLIENT-ACTION']
+    logLevel:  ['SERVER-REQ', 'CLIENT-ACTION'],
+    flickr: {
+        api_key:     'fad8fb42e90ba69fda91a88df6a84738',
+        secret:      'b5daeed895156293',
+        permissions: 'write',
+        user_id:      '135870361@N04', // bad idea hardcoding this, but don't know any better
+        access_token: '72157655678416463-a1bb8c38e44ee5d0',
+        access_token_secret: '21e6a6f107f36b93'
+    }
 }
 
 var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var async      = require('async');
+//var Flickr     = require('flickrapi');
+//var Flickr     = require('flickr-with-uploads');
+//var fickr      = require('fickr');
+var flickr      = require('flickr-oauth-and-upload');
 
 var app = express();
 
 // enable processing of the received post content, limiting request size to 5 MB
 var urlEncodedParser = bodyParser.urlencoded({extended: true, limit: '5mb' }); 
+
+//var flickr = Flickr(config.flickr.api_key, config.flickr.secret,
+//                    config.flickr.access_token, config.flickr.access_token_secret);
+
+/*var flickr;
+Flickr.authenticate(config.flickr, function(error, api) {
+    flickr = api;
+});*/
 
 /* database schema for journeys */
 var sectionSchema = mongoose.Schema({
@@ -193,7 +213,7 @@ app.get('/exportJourney*', function(req, res) {
             res.setHeader('Content-disposition', 'attachment; filename=journey_' 
                 + exportJourney.journey.name.split(' ').join('_').substring(0, 26) + '.json');
             res.setHeader('Content-type', 'application/json');
-            res.json(exportJourney);
+            res.send(JSON.stringify(exportJourney, null, 2));
         });
     } else {
         res.send('specify a journey ID as in /exportJourney?id=myID')
@@ -227,6 +247,49 @@ app.get('/getImage*', function(req, res) {
     }
 });
 
+// returns the journey with the given id in the query
+app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
+
+    async.waterfall([
+        // find image from req.body.imgID
+        function(callback) {
+            Image.findById(req.body.imgID, function(err, image) {
+                if (err) return callback(err, null);
+                // convert from base64 to bytes
+                callback(null, image.imgData);
+            });
+        },
+        // push it to the flickr server
+        function(imgBytes, callback) {
+             
+            /*var args = {
+                photo: new Buffer(imgBytes, 'base64'),
+                flickrConsumerKey: config.flickr.api_key,
+                flickrConsumerKeySecret: config.flickr.secret,
+                oauthToken: config.flickr.access_token,
+                oauthTokenSecret: config.flickr.access_token_secret,
+                callback: callback,
+                optionalArgs: {title: req.body.name}
+            };
+
+            flickr.uploadPhoto(args);*/
+
+            callback('failed to push image to fickr. '
+                + 'flickr-API just won\'t work.. i tried. hard. '
+                + '4 libraries later i give up. '
+                + 'don\'t even ask about geotags', null);
+            
+        }
+    ], function(err, result) {
+        if (err) {
+            console.error('Could not upload photo to flickr: ' + err);
+            res.writeHead(501, err, {'content-type' : 'text/plain'});
+            return res.send();
+        }
+        res.send('image pushed to flickr. flickr photoID: ' + result);
+    });
+});
+
 
 // returns the stored analytics
 // query syntax: ?ip=val
@@ -241,6 +304,12 @@ app.get('/getAnalytics*', function(req, res) {
 });
 
 
+/**
+ * @desc  writes an action to the analytics database
+ * @param ip     the IP of the callee of the request
+ * @param action a description of the action taken by the request
+ * @param type   string that distinguishes actions on the client and requests to the server
+ */
 function logToAnalytics(ip, action, type) {
     // only log, when enabled in config.logLevel
     if (config.logLevel.indexOf(type) !== -1) {

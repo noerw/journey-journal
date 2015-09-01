@@ -36,7 +36,7 @@ function addSection(form) {
     });
 
     return false; // to supress the submit of the form
-};
+}
 
 /**
  * @desc  adds a new location to the current section, and pushes the change to the DB server
@@ -153,36 +153,4 @@ function addImage(event) {
     reader.onload = function(){
         lastImage.imgData = reader.result;
     };
-};    
-
-
-/**
- * @desc  pushes changes on the journey to the DB server and updates its local version
- * @param callback function that is executed, after the ajax call succeeded
- */
-function updateJourney(callback) {
-    $.ajax({
-        type: 'POST',
-        data: journey,
-        url: 'http://' + window.location.host + '/updateJourney',
-        timeout: 5000,
-        success: function(data, textStatus) {
-            journey = data;
-            console.log('journey updated to DB');
-
-            // execute callback when ajax is finished
-            if (typeof callback === 'function') callback();
-        },
-        error: function(xhr, textStatus, errorThrown){
-            console.log('couldn\'t update journey on DB: ' + errorThrown);
-        }
-    });
-};
-
-/**
- * @desc downloads the journey (in a new tab/window)
- */
-function downloadJourney() {
-    window.open('http://' + window.location.host + '/exportJourney?id=' + journey._id);
-    logToDB('journey downloaded: ' + journey._id);
-};
+}

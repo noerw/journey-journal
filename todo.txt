@@ -1,7 +1,3 @@
-- flickr implementation
-	- add geodata to images?
-	- accounts?!
-
 - edit / delete functionality
 	- journey
 	- section

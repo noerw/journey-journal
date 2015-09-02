@@ -39,7 +39,6 @@ function loadJourney(id) {
         success: function(content, textStatus){
             journey = content;
             if (journey) {
-                console.log('journey (' + journey.name + ') was loaded');
                 //console.log(JSON.stringify(journey, null, '  '));
                 
                 // make the loaded content visible

@@ -138,6 +138,29 @@ map.on('draw:deleted', function(e) {
     logToDB('location deleted');
 });
 
+/**
+ * @desc  pushes changes on the journey to the DB server and updates its local version
+ * @param callback function that is executed, after the ajax call succeeded
+ */
+function updateJourney(callback) {
+    $.ajax({
+        type: 'POST',
+        data: journey,
+        url: 'http://' + window.location.host + '/updateJourney',
+        timeout: 5000,
+        success: function(data, textStatus) {
+            journey = data;
+            console.log('journey updated to DB');
+
+            // execute callback when ajax is finished
+            if (typeof callback === 'function') callback();
+        },
+        error: function(xhr, textStatus, errorThrown){
+            console.log('couldn\'t update journey on DB: ' + errorThrown);
+        }
+    });
+}
+
 
 // global object, buffering the last uploaded image
 var lastImage = { imgData: '' };

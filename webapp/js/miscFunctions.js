@@ -10,7 +10,7 @@
  * @desc  pushes log-entries of user-interaction/analytics to the DB server
  * @param action string describing the action performed
  */
-function logToDB(action) {
+function logToDB(action, callback) {
     $.ajax({
         type: 'POST',
         data: {action: action},
@@ -18,6 +18,7 @@ function logToDB(action) {
         timeout: 5000,
         success: function(data, textStatus ){
             console.log(action);
+            if (typeof callback === 'function') callback();
         },
         error: function(xhr, textStatus, errorThrown){
 			console.log('couldn\'t store analytics to DB: ' + errorThrown);

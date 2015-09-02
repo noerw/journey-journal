@@ -57,14 +57,14 @@ function newJourney() {
                         data: new Journey(name, $('#descTxtArea').val()),
                         url: 'http://' + window.location.host + '/updateJourney',
                         timeout: 5000,
-                        success: function(data, textStatus ){
-                            console.log('new journey was saved to DB');
+                        success: function(data, textStatus) {
                             // store analytic
-                            logToDB('journey created: ' + data._id);
-                            // load the new route
-                            openJourney(data._id, 'add-section');
+                            logToDB('journey created: ' + data._id, function() {
+                                // load the new route
+                                openJourney(data._id, 'add-section');
+                            });
                         },
-                        error: function(xhr, textStatus, errorThrown){
+                        error: function(xhr, textStatus, errorThrown) {
                             console.log("couldn't create new journey on DB: " + errorThrown);
                         }
                     });
@@ -73,7 +73,7 @@ function newJourney() {
         },
         onEscape: function() {}
     }); 
-};
+}
 
 /**
  * opens a journey
@@ -92,7 +92,7 @@ function openJourney(param, tab) {
 
     // go to map page
     window.location = url;
-};
+}
 
 /**
  * imports a journey & images from a json file to the database
@@ -152,9 +152,5 @@ function importJourney(event) {
             console.log(results[0]._id);
             openJourney(json.journey._id, 'overview');
         });
-
-
-
-
     };
-};
+}

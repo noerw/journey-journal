@@ -107,19 +107,19 @@ sidebar.on('content', function(e) {
 
             L.geoJson(section.locations[i], {
                 onEachFeature: function (feature, layer) { 
-                    var index = i; // keep index for asynchronous executionorder
-
                     // add popups
-                    locationPopup(locProp.name, locProp.description, locProp.imgID, function(popupHtml) {
-                        layer.bindPopup(popupHtml);
-                        drawnItems.addLayer(layer);
+                    locationPopup(locProp.name, locProp.description, locProp.imgID,  section.locations[i]._id,
+                        function(popupHtml) {
+                            layer.bindPopup(popupHtml);
+                            drawnItems.addLayer(layer);
 
-                        // focus the map onto the loaded features
-                        // execute this only once after all the items have been added
-                        if (drawnItems.getLayers().length === section.locations.length) {
-                            map.fitBounds(drawnItems.getBounds());
+                            // focus the map onto the loaded features
+                            // execute this only once after all the items have been added
+                            if (drawnItems.getLayers().length === section.locations.length) {
+                                map.fitBounds(drawnItems.getBounds());
+                            }
                         }
-                    });
+                    );
                 }
             });
         }

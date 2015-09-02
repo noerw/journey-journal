@@ -49,11 +49,21 @@ Flickr.authenticate(config.flickr, function(error, api) {
 });*/
 
 /* database schema for journeys */
+var locationSchema = mongoose.Schema({
+    properties: {
+        name:        String,
+        description: String,
+        imgID:       String
+    },
+    geometry: {},
+    type:     String
+});
+
 var sectionSchema = mongoose.Schema({
     name:        String,
     description: String,
     date:        { type: Date, default: Date.now },
-    locations:   [{}]
+    locations:   [locationSchema]
 });
 
 var journeySchema = mongoose.Schema({

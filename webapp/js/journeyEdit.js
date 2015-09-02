@@ -13,8 +13,8 @@ function editJourney() {
 
         //TODO: update sidebar overview panel
 
-        logToDB('journey information edited: ' + journey._id);
         updateJourney();
+        logToDB('journey information edited: ' + journey._id);
     });
 }
 
@@ -28,13 +28,42 @@ function editSection() {
 
         //TODO: update sidebar panel
 
-        logToDB('section information edited: ' + section._id);
         updateJourney();
+        logToDB('section information edited: ' + section._id);
     });
 }
 
-function editLocation() {
-    logToDB('location information edited: ' + 'NOT IMPLEMENTED YET');
+function editLocation(popupElement) {
+    // find location by ID, that stands in the popupHTML
+    var section = findCurrSection();
+    var id      = $(popupElement).data('id');
+    console.log(id);
+
+    // find location by id
+    var locationProp;
+    for (var i = 0; i < section.locations.length; i++) {
+        if (section.locations[i]._id == id) {
+            locationProp = section.locations[i].properties;
+            break;
+        }
+    }
+
+    // open dialog
+    editDialog('location', function() {
+        // replace values
+        var newTitle = $('#editTitle').val() || locationProp.name;
+        var newDesc  = $('#editDesc').val()  || locationProp.description;
+        locationProp.name        = newTitle;
+        locationProp.description = newDesc;
+
+        // push changes to DB, log
+        updateJourney();
+        logToDB('location information edited: ' + id);
+
+        //update popup
+        $(popupElement).parent().children('.popup-title').html(newTitle);
+        $(popupElement).parent().children('.popup-desc' ).html(newDesc);
+    });
 }
 
 
@@ -80,17 +109,23 @@ function addLocation(geojson, imgID) {
     var location = new Location(geojson, $('#locInputTitle').val(), $('#locInputDesc').val(), imgID);
     findCurrSection().locations.push(location);
     
-    // create popup, then add the layer to the map & update the DB
-    locationPopup(location.properties.name, location.properties.description, 
-        location.properties.imgID, function(popupHtml) {
-            var layer = new L.geoJson(location);
-            layer.bindPopup(popupHtml);
-            drawnItems.addLayer(layer);
+    // push changes to the DB server
+    updateJourney(function() {
+        //get the ID of the last location in array, which now has an _id from the DB
+        var locations = findCurrSection().locations;
+        var locID = locations[locations.length - 1]._id;
 
-            // push changes to the DB server
-            updateJourney();
-            logToDB('location added');
-        });
+        // create popup, then add the layer to the map
+        locationPopup(location.properties.name, location.properties.description, 
+            location.properties.imgID, locID, function(popupHtml) {
+                var layer = new L.geoJson(location);
+                layer.bindPopup(popupHtml);
+                drawnItems.addLayer(layer);
+            }
+        );
+    });
+
+    logToDB('location added');
 }
 
 /**
@@ -136,9 +171,9 @@ map.on('draw:created', function(e) {
  * update location in the database, when it was modified in the map
  */
 map.on('draw:edited', function(e) {
-    // as there isn't any id given to the layer it's not possible
-    // to select the correct one in journey.sections.locations
-    // instead we replace all features, as we upload the whole journey anyway
+    // simply replace all features of the current section
+    // thats cheaper, because we need to iterate them just once and not n times
+    // as we would if we'd find each location by id to replace it
 
     var section = findCurrSection();
     var i = 0;
@@ -158,11 +193,16 @@ map.on('draw:deleted', function(e) {
     var section = findCurrSection();
   
     e.layers.eachLayer(function(layer) {
+        var jsonLayer = layer.toGeoJSON();
+
         // for each removed layer: find its index in the locations array,
-        var locationIndex = findLocation(layer.toGeoJSON(), section);
-        
         // and remove it from the local journey
-        section.locations.splice(locationIndex, 1);
+        for (var i = 0; i < section.locations.length; i++) {
+            if (section.locations[i]._id == jsonLayer._id) {
+                section.locations.splice(i, 1);
+                break;
+            }
+        }
     });
 
     // push changes to db

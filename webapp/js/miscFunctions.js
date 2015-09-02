@@ -76,25 +76,3 @@ function findCurrSection(id) {
         }
     }
 }
-
-
-/**
- * @desc   finds the index position of the journey section, that is equal to the one passed
- * @param  location the location we search for
- * @param  section  optional section in which to search. if not given, the current section will be looked up
- * @return the index-position in section.locations
- */
-function findLocation(location, section) {
-
-    var sec = section || findCurrSection();
-
-    // find corresponding location in section
-    for (var i = 0; i < sec.locations.length; i++) {
-        // this roundtrip is necessary, as we need the same data-format for comparision
-        // (convert the coordinate data from string to int)
-        var convertedLoc = new L.geoJson(sec.locations[i]).toGeoJSON().features[0];
-
-        // check if equal
-        if (_.isEqual(location, convertedLoc)) return i;
-    }
-}

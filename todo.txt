@@ -1,21 +1,19 @@
-- edit / delete functionality
-	- journey
-	- section
-	- location
+- edit  functionality
+  - update sidebar panels
+    - sidebarjs: editPanelContent(id, content)
 
 ==========================================================================
 
-- close button on sidebar 
-	- update sidebar
-		- rework addPanel()
-
 - rework ajax calls using promises...?
-	- encapsulate!
+  - async!
+  - wrap jquery ajax!
 
--define location DB schema
+- close button on sidebar 
+  - update sidebar
+    - rework addPanel()
 
 - rollout
-	- change DB name
-	- readme (install, config, run, libraries, license, names?)
-	- github push
-	
+  - change DB name
+  - readme (install, config, run, libraries, license, names?)
+  - github push
+  

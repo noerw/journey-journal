@@ -10,8 +10,9 @@ function sbarTab(number) {
     return '<i class="fa fa-angle-right"></i> ' + number;
 };
 
-function sbarPanel(name, description, date) {
-    return ('<h1>%NAME%</h1><p>%DATE%</p><br><p>%DESC%</p>'
+function sbarPanel(name, description, date, id) {
+    return ('<h1 id="sec-title-' + id + '">%NAME%</h1><p>%DATE%</p><br>'
+        +  '<p id="sec-desc-' + id + '">%DESC%</p>'
         +  '<button class="btn btn-default btn-sm" onclick="editSection()">'
         +  '<i class="fa fa-edit"></i> edit</button>')
         .replace('%NAME%', name)

@@ -8,10 +8,14 @@
 
 function editJourney() {
     editDialog('journey', function() {
-        journey.name        = $('#editTitle').val() || journey.name;
-        journey.description = $('#editDesc').val()  || journey.description;
+        var newTitle = $('#editTitle').val() || journey.name;
+        var newDesc  = $('#editDesc').val()  || journey.description;
+        journey.name        = newTitle;
+        journey.description = newDesc;
 
-        //TODO: update sidebar overview panel
+        // update sidebar overview panel
+        $('#journey-title').html(newTitle);
+        $('#journey-desc').html(newDesc);
 
         updateJourney();
         logToDB('journey information edited: ' + journey._id);
@@ -23,10 +27,14 @@ function editSection() {
     var section = findCurrSection();
 
     editDialog('section', function() {
-        section.name        = $('#editTitle').val() || section.name;
-        section.description = $('#editDesc').val()  || section.description;
+        var newTitle = $('#editTitle').val() || section.name;
+        var newDesc  = $('#editDesc').val()  || section.description;
+        section.name        = newTitle;
+        section.description = newDesc;
 
-        //TODO: update sidebar panel
+        // update sidebar panel
+        $('#sec-title-' + section._id).html(newTitle);
+        $('#sec-desc-'  + section._id).html(newDesc);
 
         updateJourney();
         logToDB('section information edited: ' + section._id);
@@ -56,13 +64,12 @@ function editLocation(popupElement) {
         locationProp.name        = newTitle;
         locationProp.description = newDesc;
 
-        // push changes to DB, log
-        updateJourney();
-        logToDB('location information edited: ' + id);
-
         //update popup
         $(popupElement).parent().children('.popup-title').html(newTitle);
         $(popupElement).parent().children('.popup-desc' ).html(newDesc);
+
+        updateJourney();
+        logToDB('location information edited: ' + id);
     });
 }
 
@@ -85,7 +92,7 @@ function addSection(form) {
         sidebar.addPanel(
             panelID,
             sbarTab(journey.sections.length),
-            sbarPanel(section.name, section.description, section.date)
+            sbarPanel(section.name, section.description, section.date, panelID)
         );
 
         $('#journey-sections').append('<li><a href="#' + panelID + '">' + section.name + '</a></li>');

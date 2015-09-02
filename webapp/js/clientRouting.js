@@ -75,7 +75,8 @@ function loadJourneyContentsIntoSidebar() {
         $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
         
         // add sidebar panel
-        var panelContent = sbarPanel(section.name, section.description.replace(/\n/g, '<br>'), section.date);
+        var panelContent = sbarPanel(section.name, section.description.replace(/\n/g, '<br>'),
+                                     section.date, section._id);
         sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
     }
 };

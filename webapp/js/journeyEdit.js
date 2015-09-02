@@ -6,6 +6,38 @@
 
 'use strict';
 
+function editJourney() {
+    editDialog('journey', function() {
+        journey.name        = $('#editTitle').val() || journey.name;
+        journey.description = $('#editDesc').val()  || journey.description;
+
+        //TODO: update sidebar overview panel
+
+        logToDB('journey information edited: ' + journey._id);
+        updateJourney();
+    });
+}
+
+
+function editSection() {
+    var section = findCurrSection();
+
+    editDialog('section', function() {
+        section.name        = $('#editTitle').val() || section.name;
+        section.description = $('#editDesc').val()  || section.description;
+
+        //TODO: update sidebar panel
+
+        logToDB('section information edited: ' + section._id);
+        updateJourney();
+    });
+}
+
+function editLocation() {
+    logToDB('location information edited: ' + 'NOT IMPLEMENTED YET');
+}
+
+
 /**
  * @desc  adds a new section to the journey, and pushes the change to the DB server
  * @param form DOM element of the new-section-form
@@ -67,7 +99,7 @@ function addLocation(geojson, imgID) {
  */
 map.on('draw:created', function(e) {
     // open popup, asking for name and description, adding an image
-    bootbox.dialog(newLocationPopup(function() {
+    newLocationDialog(function() {
 
         var layer = e.layer.toGeoJSON();
 
@@ -97,7 +129,7 @@ map.on('draw:created', function(e) {
         } else {
             addLocation(layer, '');
         }
-    }));
+    });
 });
 
 /**

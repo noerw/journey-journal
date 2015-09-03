@@ -12,7 +12,8 @@ var map = L.map('map', {
     zoom: 14,
     minZoom: 2,
     maxZoom: 17,
-    maxBounds: [[90, 180], [-90, -180]]
+    maxBounds: [[90, 180], [-90, -180]],
+    zoomAnimationThreshold: 17
 });
 
 // define basemaps

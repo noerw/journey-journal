@@ -87,18 +87,18 @@ function newLocationDialog(okCallback) {
  * @param  name  type of feature (section, location, journey) that should be edited
  * @param  okCallback function that is executed when the ok button was clicked
  */
-function editDialog(name, okCallback) {
+function editDialog(name, titlePlaceholder, descPlaceholder, okCallback) {
     bootboxDialog('Edit ' + name + ' information',
                   '<div class="form-group">'
                 + '  <label for="editTitle" class="col-sm-3 control-label">Title:</label>'
                 + '  <div class="col-sm-9">'
-                + '    <input type="text" class="form-control" id="editTitle" placeholder="leave empty to keep unchanged">'
-                + '</div></div><br><br>'
+                + '    <input type="text" class="form-control" id="editTitle" value="'
+                +      titlePlaceholder + '"></div></div><br><br>'
                 + '<div class="form-group">'
                 + '  <label for="editDesc" class="col-sm-3 control-label">Description:</label>'
                 + '  <div class="col-sm-9">'
-                + '    <textarea type="text" class="form-control" rows="6" id="editDesc" placeholder="leave empty to keep unchanged">'
-                + '</textarea></div></div><br><br><br><br><br><br><br>',
+                + '    <textarea type="text" class="form-control" rows="6" id="editDesc">'
+                +      descPlaceholder + '</textarea></div></div><br><br><br><br><br><br><br>',
                   okCallback
     );
 }

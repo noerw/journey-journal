@@ -7,7 +7,7 @@
 'use strict';
 
 function editJourney() {
-    editDialog('journey', function() {
+    editDialog('journey', journey.name, journey.description, function() {
         var newTitle = $('#editTitle').val() || journey.name;
         var newDesc  = $('#editDesc').val()  || journey.description;
         journey.name        = newTitle;
@@ -15,7 +15,7 @@ function editJourney() {
 
         // update sidebar overview panel
         $('#journey-title').html(newTitle);
-        $('#journey-desc').html(newDesc);
+        $('#journey-desc').html(newDesc.replace(/\n/g, '<br>'));
 
         updateJourney();
         logToDB('journey information edited: ' + journey._id);
@@ -26,7 +26,7 @@ function editJourney() {
 function editSection() {
     var section = findCurrSection();
 
-    editDialog('section', function() {
+    editDialog('section', section.name, section.description, function() {
         var newTitle = $('#editTitle').val() || section.name;
         var newDesc  = $('#editDesc').val()  || section.description;
         section.name        = newTitle;
@@ -34,7 +34,7 @@ function editSection() {
 
         // update sidebar panel
         $('#sec-title-' + section._id).html(newTitle);
-        $('#sec-desc-'  + section._id).html(newDesc);
+        $('#sec-desc-'  + section._id).html(newDesc.replace(/\n/g, '<br>'));
 
         updateJourney();
         logToDB('section information edited: ' + section._id);
@@ -48,25 +48,25 @@ function editLocation(popupElement) {
     console.log(id);
 
     // find location by id
-    var locationProp;
+    var locProp;
     for (var i = 0; i < section.locations.length; i++) {
         if (section.locations[i]._id == id) {
-            locationProp = section.locations[i].properties;
+            locProp = section.locations[i].properties;
             break;
         }
     }
 
     // open dialog
-    editDialog('location', function() {
+    editDialog('location', locProp.name, locProp.description, function() {
         // replace values
-        var newTitle = $('#editTitle').val() || locationProp.name;
-        var newDesc  = $('#editDesc').val()  || locationProp.description;
-        locationProp.name        = newTitle;
-        locationProp.description = newDesc;
+        var newTitle = $('#editTitle').val() || locProp.name;
+        var newDesc  = $('#editDesc').val()  || locProp.description;
+        locProp.name        = newTitle;
+        locProp.description = newDesc;
 
         //update popup
         $(popupElement).parent().children('.popup-title').html(newTitle);
-        $(popupElement).parent().children('.popup-desc' ).html(newDesc);
+        $(popupElement).parent().children('.popup-desc' ).html(newDesc.replace(/\n/g, '<br>'));
 
         updateJourney();
         logToDB('location information edited: ' + id);

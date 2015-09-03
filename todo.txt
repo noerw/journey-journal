@@ -1,19 +1,14 @@
-- edit  functionality
-  - update sidebar panels
-    - sidebarjs: editPanelContent(id, content)
-
 ==========================================================================
 
 - rework ajax calls using promises...?
   - async!
   - wrap jquery ajax!
 
-- close button on sidebar 
-  - update sidebar
-    - rework addPanel()
-
 - rollout
   - change DB name
   - readme (install, config, run, libraries, license, names?)
   - github push
   
+- close button on sidebar 
+  - update sidebar
+    - rework addPanel()

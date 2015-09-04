@@ -30,10 +30,7 @@ var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var async      = require('async');
-//var Flickr     = require('flickrapi');
-//var Flickr     = require('flickr-with-uploads');
-//var fickr      = require('fickr');
-var flickr      = require('flickr-oauth-and-upload');
+//var flickr      = require('flickr-oauth-and-upload');
 
 var app = express();
 
@@ -257,7 +254,8 @@ app.get('/getImage*', function(req, res) {
     }
 });
 
-// returns the journey with the given id in the query
+// uploads an image to the flickr account specified in config.flickr
+// does not work, as i couldnt get any of the available fickr api libs to work.
 app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
 
     async.waterfall([
@@ -270,10 +268,10 @@ app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
             });
         },
         // push it to the flickr server
-        function(imgBytes, callback) {
+        function(imgData, callback) {
              
             /*var args = {
-                photo: new Buffer(imgBytes, 'base64'),
+                photo: new Buffer(imgData, 'base64'),
                 flickrConsumerKey: config.flickr.api_key,
                 flickrConsumerKeySecret: config.flickr.secret,
                 oauthToken: config.flickr.access_token,

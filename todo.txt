@@ -1,8 +1,7 @@
 ==========================================================================
 
-- rework ajax calls using promises...?
+- rework draw:created using promises...?
   - async!
-  - wrap jquery ajax!
 
 - rollout
   - change DB name

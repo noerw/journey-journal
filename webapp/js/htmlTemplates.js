@@ -29,25 +29,21 @@ function locationPopup(name, description, imgID, locID, callback) {
     
     // load image if an ID is given
     if (typeof imgID !== 'undefined' && imgID != '') {
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            url: 'http://' + window.location.host + '/getImage?id=' + imgID,
-            timeout: 5000,
-            success: function(content, textStatus){
-                html += '<img src="' + content.imgData + '" alt="' + name + '_image"/><br><br>';
-                html2 = '<button class="btn btn-primary btn-sm" onclick="uploadToFlickr(\'' 
-                      + imgID + '\', \'' + name + '\')">'
-                      + '<i class="fa fa-cloud-upload"></i> upload image to flickr</button> '
-                      + html2;
+        
+        ajax(function(err, result){
+            if (err) return console.error('image couldn\'t be loaded from DB:', err);
 
-                // execute callback and pass it the generated html
-                if (typeof callback === 'function') callback(html + html2);
-            },
-            error: function(xhr, textStatus, errorThrown){
-                console.log('image couldn\'t be loaded from DB: ' + errorThrown);
-            }
-        });
+            html += '<img src="' + result.imgData + '" alt="' + name + '_image"/><br><br>';
+            html2 = '<button class="btn btn-primary btn-sm" onclick="uploadToFlickr(\'' 
+                  + imgID + '\', \'' + name + '\')">'
+                  + '<i class="fa fa-cloud-upload"></i> upload image to flickr</button> '
+                  + html2;
+
+            // execute callback and pass it the generated html
+            if (typeof callback === 'function') callback(html + html2);
+        },
+        'http://' + location.host + '/getImage?id=' + imgID);
+
     } else {
         if (typeof callback === 'function') callback(html + html2);
     }

@@ -149,23 +149,15 @@ map.on('draw:created', function(e) {
         if (lastImage.imgData !== '') {
 
             // upload the image to the DB server
-            $.ajax({
-                type: 'POST',
-                data: lastImage,
-                url: 'http://' + window.location.host + '/addImage',
-                timeout: 5000,
-                success: function(data, textStatus) {
-                    logToDB('image added: ' + data);
-                    console.log('image uploaded: ' + data);
 
-                    // add the drawn layer as geojson to the journeys current section
-                    addLocation(layer, data);
+            ajax(function(err, result) {
+                if (err) return console.error('couldn\'t upload image to DB:', err);
+                
+                // add the drawn layer as geojson to the journeys current section
+                addLocation(layer, result);
 
-                },
-                error: function(xhr, textStatus, errorThrown){
-                    console.log('couldn\'t upload image to DB: ' + errorThrown);
-                }
-            });
+                logToDB('image added: ' + result);
+            }, 'http://' + location.host + '/addImage', 'POST', lastImage);
 
             lastImage.imgData = ''; // clear lastImage data
         } else {
@@ -222,22 +214,15 @@ map.on('draw:deleted', function(e) {
  * @param callback function that is executed, after the ajax call succeeded
  */
 function updateJourney(callback) {
-    $.ajax({
-        type: 'POST',
-        data: journey,
-        url: 'http://' + window.location.host + '/updateJourney',
-        timeout: 5000,
-        success: function(data, textStatus) {
-            journey = data;
-            console.log('journey updated to DB');
+    ajax(function(err, result) {
+        if (err) return console.error('couldn\'t update journey on DB:', err);
 
-            // execute callback when ajax is finished
-            if (typeof callback === 'function') callback();
-        },
-        error: function(xhr, textStatus, errorThrown){
-            console.log('couldn\'t update journey on DB: ' + errorThrown);
-        }
-    });
+        journey = result;
+
+        // execute callback when ajax is finished
+        if (typeof callback === 'function') callback();
+
+    }, 'http://' + location.host + '/updateJourney', 'POST', journey);
 }
 
 

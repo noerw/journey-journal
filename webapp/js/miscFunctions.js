@@ -7,47 +7,58 @@
 'use strict';
 
 /**
+ * @desc  wrapper for jQuery ajax calls
+ * @param callback callback to execute after the request has returned
+                   node style 2 parameters: callback(err, result)
+ * @param url      url to send the request to
+ * @param method   optional HTTP method, defaults to 'GET'
+ * @param data     optional js-object that is send as data with a 'POST' call
+ */
+function ajax(callback, url, method, data) {
+    var ajaxOptions = {
+        type:    method || 'GET',
+        url:     url,
+        timeout: 5000,
+        success: function(data, textStatus) { callback(null, data); },
+        error:   function(xhr, textStatus, errorThrown) { callback(errorThrown, null); }
+    };
+
+    if      (method === 'POST') ajaxOptions.data     = data;
+    else if (method === 'GET')  ajaxOptions.dataType = 'json';
+
+    $.ajax(ajaxOptions);
+}
+
+
+/**
  * @desc  pushes log-entries of user-interaction/analytics to the DB server
  * @param action string describing the action performed
  */
 function logToDB(action, callback) {
-    $.ajax({
-        type: 'POST',
-        data: {action: action},
-        url: 'http://' + window.location.host + '/addAnalytics',
-        timeout: 5000,
-        success: function(data, textStatus ){
-            console.log(action);
-            if (typeof callback === 'function') callback();
-        },
-        error: function(xhr, textStatus, errorThrown){
-			console.log('couldn\'t store analytics to DB: ' + errorThrown);
-        }
-    });
+    ajax(function(err, result) {
+        if (err) return console.error('couldn\'t store analytics to DB:', err);
+        console.log(action);
+        if (typeof callback === 'function') callback();
+    },
+    'http://' + location.host + '/addAnalytics', 'POST', { action: action });
 }
 
 /**
- * @desc  pushes an image that is stored in the DB to flickr 
+ * @desc  pushes an image that is stored in the DB to flickr
  *        to the account specified in the serverconfig
- *        DOES NOT WORK (on serverside, see server.js#l251)
+ *        DOES NOT WORK (on serverside, see server.js#l257)
  * @param imgID database ID of the image to submit
  * @param name  title of the image on flickr
  */
 function uploadToFlickr(imgID, name) {
-    $.ajax({
-        type: 'POST',
-        data: {
-            imgID: imgID,
-            name:  name
-        },
-        url: 'http://' + window.location.host + '/imageToFlickr',
-        timeout: 5000,
-        success: function(data, textStatus) {
-            logToDB('image (' + imgID + ') uploaded to flickr');
-        },
-        error: function(xhr, textStatus, errorThrown){
-            console.error('couldn\'t upload image to flickr: ' + errorThrown);
-        }
+    ajax(function(err, result) {
+        if (err) return console.error('couldn\'t upload image to flickr:', err);
+        logToDB('image (' + imgID + ') uploaded to flickr');
+    },
+    'http://' + location.host + '/imageToFlickr', 'POST',
+    {
+        imgID: imgID,
+        name:  name
     });
 }
 

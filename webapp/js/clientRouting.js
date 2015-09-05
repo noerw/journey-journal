@@ -31,32 +31,23 @@ window.onhashchange = function(e) {
  * @param callback function that is executed after the ajax call succeeded
  */
 function loadJourney(id) {
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: 'http://' + window.location.host + '/getJourney?id=' + id,
-        timeout: 5000,
-        success: function(content, textStatus){
-            journey = content;
-            if (journey) {
-                //console.log(JSON.stringify(journey, null, '  '));
-                
-                // make the loaded content visible
-                loadJourneyContentsIntoSidebar();
+    ajax(function(err, result) {
+        if (err) return console.error('journey could not be loaded..', err);
+        if (result) {
+            // store in local (global) copy & show it on the site
+            journey = result;
+            loadJourneyContentsIntoSidebar();
 
-                logToDB('journey loaded: ' + id);
-            } else {
-                console.error('no journey could be found!');
-            }
-            
-            // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
-            sidebar.open(window.location.hash.slice(1));
-        },
-        error: function(xhr, textStatus, errorThrown){
-            console.error('journey could not be loaded..  ' + errorThrown);
+            logToDB('journey loaded: ' + id);
+            //console.log(JSON.stringify(journey, null, '  '));
+        } else {
+            console.error('no journey could be found!');
         }
-    });
-};
+
+        // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
+        sidebar.open(window.location.hash.slice(1));
+    }, 'http://' + location.host + '/getJourney?id=' + id);
+}
 
 /**
  * @desc  displays the contents of the local journey on the site
@@ -69,17 +60,9 @@ function loadJourneyContentsIntoSidebar() {
 
     // add sections to the sidebar & overview
     for (var i = 0; i < journey.sections.length; i++) {
-        var section = journey.sections[i];
-
-        // add to overview
-        $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
-        
-        // add sidebar panel
-        var panelContent = sbarPanel(section.name, section.description.replace(/\n/g, '<br>'),
-                                     section.date, section._id);
-        sidebar.addPanel(section._id, sbarTab(i + 1), panelContent);
+        addSection2Sidebar(journey.sections[i], i + 1);
     }
-};
+}
 
 
 /*
@@ -141,3 +124,23 @@ sidebar.on('content', function(e) {
     // log action to DB server
     logToDB('panel selected: ' + e.id);
 });
+
+function addSection2Sidebar(section, index) {
+    // add sidebar panel
+    sidebar.addPanel(
+        section._id,
+        sbarTab(index),
+        sbarPanel(section.name, section.description, section.date, section._id)
+    );
+    
+    // add to overview
+    $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
+}
+
+function addLocation2Map(location) {
+    // load image, if known
+
+    // create popup, add layer to map
+
+    // callback?
+}

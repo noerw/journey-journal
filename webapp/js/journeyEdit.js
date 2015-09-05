@@ -86,21 +86,14 @@ function addSection(form) {
 
     // push changes to server DB
     updateJourney(function() {
-        // add section to sidebar (content, tab, overview), after the server responded
-        var panelID = journey.sections[journey.sections.length - 1]._id;
+        // add section to sidebar after the server responded
+        section = journey.sections[journey.sections.length - 1];
+        addSection2Sidebar(section, journey.sections.length);
 
-        sidebar.addPanel(
-            panelID,
-            sbarTab(journey.sections.length),
-            sbarPanel(section.name, section.description, section.date, panelID)
-        );
-
-        $('#journey-sections').append('<li><a href="#' + panelID + '">' + section.name + '</a></li>');
-
-        // update the adress hash ( and open the correct sidebar tab)
-        sidebar.open(panelID);
-        window.location.hash = '#' + panelID;
-        logToDB('section added: ' + panelID);
+        // update the adress hash, and open the correct sidebar tab
+        sidebar.open(section._id);
+        window.location.hash = '#' + section._id;
+        logToDB('section added: ' + section._id);
     });
 
     return false; // to supress the submit of the form
@@ -118,7 +111,7 @@ function addLocation(geojson, imgID) {
     
     // push changes to the DB server
     updateJourney(function() {
-        //get the ID of the last location in array, which now has an _id from the DB
+        //get the ID of the new location, which now has an _id from the DB
         var locations = findCurrSection().locations;
         var locID = locations[locations.length - 1]._id;
 

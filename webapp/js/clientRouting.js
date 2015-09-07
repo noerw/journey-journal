@@ -120,6 +120,7 @@ function addSection2Sidebar(section, index) {
     
     // add to overview
     $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
+    $('#journey-sections-title').removeClass('hidden');
 }
 
 function addLocation2Map(location, callback) {

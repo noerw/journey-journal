@@ -46,17 +46,21 @@
       <div class="sidebar-content active" id="sbar-content">
         <div class="sidebar-pane" id="overview">
           <h1 id="journey-title">No journey was loaded! :^(</h1>
-          <p  id="journey-desc"></p>
+          <p id="journey-desc"></p>
+          <p id="journey-sections-title" class="hidden"><strong>Sections:</strong></p>
           <ol id="journey-sections"></ol>
           <br>
           <a href="/" class="btn btn-default">
             <i class="fa fa-home"></i> startpage
           </a>
           <button class="btn btn-default" onclick="downloadJourney()">
-            <i class="fa fa-download"></i> download journey
+            <i class="fa fa-download"></i> export journey
           </button>
           <button class="btn btn-default" onclick="editJourney()">
             <i class="fa fa-edit"></i> edit
+          </button>
+          <button class="btn btn-default" onclick="removeJourney()">
+            <i class="fa fa-trash-o"></i> remove journey
           </button>
         </div>
 

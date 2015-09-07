@@ -1,4 +1,4 @@
-/**  
+/**
 * @desc   http & database server for the webapp
 * @author Norwin Roosen
 * @date   150822
@@ -14,15 +14,12 @@
 var config = {
     httpPort:  8080,
     mongoPort: 27017,
-    dbName:    'myJourneyJournal_dev',
+    dbName:    'myJourneyJournal',
     logLevel:  ['SERVER-REQ', 'CLIENT-ACTION'],
     flickr: {
         api_key:     'fad8fb42e90ba69fda91a88df6a84738',
         secret:      'b5daeed895156293',
-        permissions: 'write',
-        user_id:      '135870361@N04', // bad idea hardcoding this, but don't know any better
-        access_token: '72157655678416463-a1bb8c38e44ee5d0',
-        access_token_secret: '21e6a6f107f36b93'
+        permissions: 'write'
     }
 }
 
@@ -178,29 +175,21 @@ app.get('/exportJourney*', function(req, res) {
     if(req.query.id) {
         // if an id is given in the URL query, execute the following async funtions in series
         async.waterfall( [
-            // find the journey
+
+            // find the used imageIDs
             function(callback) {
-                Journey.findById(req.query.id, function(err, journey) {
+                getImageIDs(req.query.id, function(err, imageIDs, journey) {
                     if (err) return callback(err, null);
-                    callback(null, journey);
+                    callback(null, imageIDs, journey);
                 });
             },
 
-            // extract all imageIDs used & find the corresponding images
-            function(journey, callback) {
-            
-                var imageIDs = [];
-                for (var i = 0; i < journey.sections.length; i++) {
-                    var section = journey.sections[i];
-                    for (var k = 0; k < section.locations.length; k++) {
-                        var imageID = section.locations[k].properties.imgID;
-                        if (imageID != '') imageIDs.push(imageID);
-                    }
-                }
+            // find the corresponding images
+            function(imageIDs, journey, callback) {
 
                 var images = [];
-                async.each(imageIDs, function(item, imageCallback) {
-                    Image.findById(item, function(err, image) {
+                async.each(imageIDs, function(imageID, imageCallback) {
+                    Image.findById(imageID, function(err, image) {
                         if (err) return imageCallback(err);
                         images.push(image);
                         imageCallback(null);
@@ -221,6 +210,51 @@ app.get('/exportJourney*', function(req, res) {
                 + exportJourney.journey.name.split(' ').join('_').substring(0, 26) + '.json');
             res.setHeader('Content-type', 'application/json');
             res.send(JSON.stringify(exportJourney, null, 2));
+        });
+    } else {
+        res.send('specify a journey ID as in /exportJourney?id=myID')
+    }
+});
+
+app.get('/removeJourney*', function(req, res) {
+    if(req.query.id) {
+        // if an id is given in the URL query, execute the following async funtions in series
+        async.waterfall( [
+
+            // find the used imageIDs
+            function(callback) {
+                getImageIDs(req.query.id, function(err, imageIDs, journey) {
+                    if (err) return callback(err, null);
+                    callback(null, imageIDs);
+                });
+            },
+
+            // find the corresponding images & remove each
+            function(imageIDs, callback) {
+
+                async.each(imageIDs, function(imageID, imageCallback) {
+                    Image.findByIdAndRemove(imageID, function(err, image) {
+                        if (err) return imageCallback(err);
+                        imageCallback(null);
+                    });
+                }, function(err) {
+                    if (err) callback(err);
+                    callback(null);
+                });
+            },
+
+            // remove the journey itself
+            function(callback) {
+                Journey.findByIdAndRemove(req.query.id, function(err, journey) {
+                    if (err) return callback(err);
+                    callback(null);
+                });
+            }
+
+        // catch errors, or respond with an combined export object as file 
+        ], function (err) {
+            if (err) return console.error(err);
+            res.send('journey was deleted from DB');
         });
     } else {
         res.send('specify a journey ID as in /exportJourney?id=myID')
@@ -344,4 +378,30 @@ function logToAnalytics(ip, action, type) {
     }
 
     return 'logging disabled for: ' + type;
+}
+
+
+/**
+ * @desc   gets all image IDs from a journey
+ * @param  journeyID the id of the journey to search
+ * @param  function that is executed when the job is done.
+ *         e.g. function(err, imageIDs, journey), where imageIDs is an array
+ */
+function getImageIDs(journeyID, callback) {
+    // find the journey
+    Journey.findById(journeyID, function(err, journey) {
+        if (err) return callback(err, null);
+
+        // extract all imageIDs used
+        var imageIDs = [];
+        for (var i = 0; i < journey.sections.length; i++) {
+            var section = journey.sections[i];
+            for (var k = 0; k < section.locations.length; k++) {
+                var imageID = section.locations[k].properties.imgID;
+                if (imageID != '') imageIDs.push(imageID);
+            }
+        }
+
+        callback(null, imageIDs, journey);
+    });
 }

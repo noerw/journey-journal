@@ -237,3 +237,11 @@ function addImage(event) {
         lastImage.imgData = reader.result;
     };
 }
+
+function removeJourney() {
+    ajax(function(err, result) {
+        logToDB('journey deleted: ' + journey._id, function() {
+            window.location = 'http://' + window.location.host;
+        });
+    }, 'http://' + window.location.host + '/removeJourney?id=' + journey._id);
+}

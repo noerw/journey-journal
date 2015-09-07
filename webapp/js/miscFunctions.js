@@ -40,7 +40,7 @@ function logToDB(action, callback) {
         console.log(action);
         if (typeof callback === 'function') callback();
     },
-    'http://' + location.host + '/addAnalytics', 'POST', { action: action });
+    'http://' + window.location.host + '/addAnalytics', 'POST', { action: action });
 }
 
 /**
@@ -55,7 +55,7 @@ function uploadToFlickr(imgID, name) {
         if (err) return console.error('couldn\'t upload image to flickr:', err);
         logToDB('image (' + imgID + ') uploaded to flickr');
     },
-    'http://' + location.host + '/imageToFlickr', 'POST',
+    'http://' + window.location.host + '/imageToFlickr', 'POST',
     {
         imgID: imgID,
         name:  name

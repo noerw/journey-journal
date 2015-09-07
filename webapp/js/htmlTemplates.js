@@ -21,11 +21,11 @@ function sbarPanel(name, description, date, id) {
 };
 
 function locationPopup(name, description, imgID, locID, callback) {
-    var html = '<h4 class="popup-title">%NAME%</h4><p class="popup-desc">%DESC%</p>'
+    var contentHtml = '<h4 class="popup-title">%NAME%</h4><p class="popup-desc">%DESC%</p>'
         .replace('%NAME%', name)
         .replace('%DESC%', description.replace(/\n/g, '<br>'));
-    var html2 = '<button class="btn btn-default btn-sm" data-id="' + locID
-              + '" onclick="editLocation(this)"><i class="fa fa-edit"></i> edit</button>';
+    var buttonHtml = '<button class="btn btn-default btn-sm" data-id="' + locID
+        + '" onclick="editLocation(this)"><i class="fa fa-edit"></i> edit</button>';
     
     // load image if an ID is given
     if (typeof imgID !== 'undefined' && imgID != '') {
@@ -33,19 +33,18 @@ function locationPopup(name, description, imgID, locID, callback) {
         ajax(function(err, result){
             if (err) return console.error('image couldn\'t be loaded from DB:', err);
 
-            html += '<img src="' + result.imgData + '" alt="' + name + '_image"/><br><br>';
-            html2 = '<button class="btn btn-primary btn-sm" onclick="uploadToFlickr(\'' 
-                  + imgID + '\', \'' + name + '\')">'
-                  + '<i class="fa fa-cloud-upload"></i> upload image to flickr</button> '
-                  + html2;
+            contentHtml += '<img src="' + result.imgData + '" alt="' + name + '_image"/><br><br>'
+                + '<button class="btn btn-primary btn-sm" onclick="uploadToFlickr(\''
+                + imgID + '\', \'' + name + '\')">'
+                + '<i class="fa fa-cloud-upload"></i> upload image to flickr</button> ';
 
             // execute callback and pass it the generated html
-            if (typeof callback === 'function') callback(html + html2);
-        },
-        'http://' + location.host + '/getImage?id=' + imgID);
+            if (typeof callback === 'function') callback(contentHtml + buttonHtml);
+
+        }, 'http://' + window.location.host + '/getImage?id=' + imgID);
 
     } else {
-        if (typeof callback === 'function') callback(html + html2);
+        if (typeof callback === 'function') callback(contentHtml + buttonHtml);
     }
 };
 

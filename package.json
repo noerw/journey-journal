@@ -1,6 +1,6 @@
 {
-  "name": "myjourneyjournal",
-  "version": "0.0.1",
+  "name": "my-journey-journal",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "mongoose": "~4.0.6",

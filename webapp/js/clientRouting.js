@@ -46,7 +46,7 @@ function loadJourney(id) {
 
         // open the sidebar tab that is specified in the url, as the plugin doesnt do that by itself
         sidebar.open(window.location.hash.slice(1));
-    }, 'http://' + location.host + '/getJourney?id=' + id);
+    }, 'http://' + window.location.host + '/getJourney?id=' + id);
 }
 
 /**
@@ -86,28 +86,13 @@ sidebar.on('content', function(e) {
         var section = findCurrSection(e.id);
 
         // add the sections layers to drawnItems
-        for (var i = 0; i < section.locations.length; i++) {
-            var locProp = section.locations[i].properties;
+        async.each(section.locations, function(location, callback) {
+            addLocation2Map(location, function() { callback (null); });
+        }, function(err) {
+            //focus the map onto all locations
+            if (section.locations.length) map.fitBounds(drawnItems.getBounds());
+        })
 
-            L.geoJson(section.locations[i], {
-                onEachFeature: function (feature, layer) { 
-                    // add popups
-                    locationPopup(locProp.name, locProp.description, locProp.imgID,  section.locations[i]._id,
-                        function(popupHtml) {
-                            layer.bindPopup(popupHtml);
-                            drawnItems.addLayer(layer);
-
-                            // focus the map onto the loaded features
-                            // execute this only once after all the items have been added
-                            if (drawnItems.getLayers().length === section.locations.length) {
-                                map.fitBounds(drawnItems.getBounds());
-                            }
-                        }
-                    );
-                }
-            });
-        }
-        
         // init the draw control with the sections locations
         drawnItems.addTo(map)
         draw = new L.Control.Draw({
@@ -137,10 +122,19 @@ function addSection2Sidebar(section, index) {
     $('#journey-sections').append('<li><a href="#' + section._id + '">' + section.name + '</a></li>');
 }
 
-function addLocation2Map(location) {
-    // load image, if known
+function addLocation2Map(location, callback) {
+    var locProp = location.properties;
+    // create popup (incl getting the image from the server)
+    locationPopup(
+        locProp.name,  locProp.description,
+        locProp.imgID, location._id,
+        function(popupHtml) {
+            // add the location with its popup to the map
+            var layer = new L.geoJson(location);
+            layer.bindPopup(popupHtml);
+            drawnItems.addLayer(layer);
 
-    // create popup, add layer to map
-
-    // callback?
+            if (typeof callback === 'function') callback();
+        }
+    );
 }

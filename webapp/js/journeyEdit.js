@@ -86,7 +86,7 @@ function addSection(form) {
 
     // push changes to server DB
     updateJourney(function() {
-        // add section to sidebar after the server responded
+        // add section to sidebar after the server added an ID
         section = journey.sections[journey.sections.length - 1];
         addSection2Sidebar(section, journey.sections.length);
 
@@ -100,62 +100,65 @@ function addSection(form) {
 }
 
 /**
- * @desc  adds a new location to the current section, and pushes the change to the DB server
- * @param geojson geojson of the new location
- * @param imgID id of the image that should be shown in the popup
- */
-function addLocation(geojson, imgID) {
-    // add the drawn layer as geojson to the journeys current section
-    var location = new Location(geojson, $('#locInputTitle').val(), $('#locInputDesc').val(), imgID);
-    findCurrSection().locations.push(location);
-    
-    // push changes to the DB server
-    updateJourney(function() {
-        //get the ID of the new location, which now has an _id from the DB
-        var locations = findCurrSection().locations;
-        var locID = locations[locations.length - 1]._id;
-
-        // create popup, then add the layer to the map
-        locationPopup(location.properties.name, location.properties.description, 
-            location.properties.imgID, locID, function(popupHtml) {
-                var layer = new L.geoJson(location);
-                layer.bindPopup(popupHtml);
-                drawnItems.addLayer(layer);
-            }
-        );
-    });
-
-    logToDB('location added');
-}
-
-/**
- * save a drawn layer to the current section of the journey, when it was created
+ * @desc  save a drawn layer to the current section of the journey, when it was created.
+ *        rather complex, as we first need to upload the image & get its ID back, then
+ *        add the location & get it's ID back, create the popup & then add it to the map.
  * @param e draw event
  */
 map.on('draw:created', function(e) {
-    // open popup, asking for name and description, adding an image
-    newLocationDialog(function() {
+    // the json to be added to the journey
+    var geojson = e.layer.toGeoJSON();
 
-        var layer = e.layer.toGeoJSON();
+    async.waterfall([
+        // open dialog & add entered values to the geojson
+        function(callback) {
+            newLocationDialog(function() {
+                geojson.properties.name = $('#locInputTitle').val() || 'location title';
+                geojson.properties.description = $('#locInputDesc').val() || 'location description';
 
-        // check if an image was added
-        if (lastImage.imgData !== '') {
+                callback(null);
+            })
+        },
 
-            // upload the image to the DB server
+        // upload image, if one was chosen
+        function(callback) {
+            // check if an image was added
+            if (lastImage.imgData !== '') {
 
-            ajax(function(err, result) {
-                if (err) return console.error('couldn\'t upload image to DB:', err);
-                
-                // add the drawn layer as geojson to the journeys current section
-                addLocation(layer, result);
+                // upload the image to the DB server
+                ajax(function(err, result) {
 
-                logToDB('image added: ' + result);
-            }, 'http://' + location.host + '/addImage', 'POST', lastImage);
+                    if (err) return callback(err, null);
+                    logToDB('image added: ' + result);
+                    callback(null, result);
 
-            lastImage.imgData = ''; // clear lastImage data
-        } else {
-            addLocation(layer, '');
+                }, 'http://' + window.location.host + '/addImage', 'POST', lastImage);
+
+                lastImage.imgData = ''; // clear lastImage data
+            } else {
+                callback(null, '');
+            }
+        },
+
+        // create location with returned imgID, update journey
+        function(imgID, callback) {
+            geojson.properties.imgID = imgID;
+            findCurrSection().locations.push(geojson);
+
+            updateJourney(function() { callback(null); });
+        },
+
+        // create Popup width the new location ID & add the location to the map
+        function(callback) {
+            var locations = findCurrSection().locations;
+            var location = locations[locations.length - 1];
+            addLocation2Map(location, function() { callback(null, location._id); });
         }
+    ],
+    // done!
+    function(err, result) {
+        if (err) return console.error('The location couldn\'t be added:', err);
+        logToDB('location added: ' + result);
     });
 });
 
@@ -215,7 +218,7 @@ function updateJourney(callback) {
         // execute callback when ajax is finished
         if (typeof callback === 'function') callback();
 
-    }, 'http://' + location.host + '/updateJourney', 'POST', journey);
+    }, 'http://' + window.location.host + '/updateJourney', 'POST', journey);
 }
 
 

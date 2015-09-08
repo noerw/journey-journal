@@ -52,7 +52,7 @@ function logToDB(action, callback) {
  */
 function uploadToFlickr(imgID, name) {
     ajax(function(err, result) {
-        if (err) return console.error('couldn\'t upload image to flickr:', err);
+        if (err) return console.error(err);
         logToDB('image (' + imgID + ') uploaded to flickr');
     },
     'http://' + window.location.host + '/imageToFlickr', 'POST',

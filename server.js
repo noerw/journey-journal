@@ -17,9 +17,16 @@ var config = {
     dbName:    'myJourneyJournal',
     logLevel:  ['SERVER-REQ', 'CLIENT-ACTION'],
     flickr: {
-        api_key:     'fad8fb42e90ba69fda91a88df6a84738',
-        secret:      'b5daeed895156293',
-        permissions: 'write'
+        api_key:      'fad8fb42e90ba69fda91a88df6a84738',
+        api_secret:       'b5daeed895156293',
+        permissions:  'write',
+
+        // credentials to use the app with flickr-account 'geosoft12015'
+        // https://www.flickr.com/photos/134840879@N03/
+        // bad idea hardcoding this, but as this is a shared account anyway...
+        user_id:      '134840879@N03',
+        access_token: '72157658293334096-e41e92696ccd564d',
+        access_token_secret: '014ca6d28798d425'
     }
 }
 
@@ -28,20 +35,12 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var async      = require('async');
 var exif       = require('piexifjs');
-//var flickr      = require('flickr-oauth-and-upload');
+var flickr     = require('flickr-upload')(config.flickr);
 
 var app = express();
 
 // enable processing of the received post content, limiting request size to 5 MB
-var urlEncodedParser = bodyParser.urlencoded({extended: true, limit: '5mb' }); 
-
-//var flickr = Flickr(config.flickr.api_key, config.flickr.secret,
-//                    config.flickr.access_token, config.flickr.access_token_secret);
-
-/*var flickr;
-Flickr.authenticate(config.flickr, function(error, api) {
-    flickr = api;
-});*/
+var urlEncodedParser = bodyParser.urlencoded({extended: true, limit: '5mb' });
 
 /* database schema for journeys */
 var locationSchema = mongoose.Schema({
@@ -298,7 +297,8 @@ app.get('/getImage*', function(req, res) {
 });
 
 // uploads an image to the flickr account specified in config.flickr
-// does not work, as i couldnt get any of the available fickr api libs to work.
+// DOES NOT WORK, flickr always responds 'Filetype not recognized'.
+// i tried 6 libraries and various encodings, and now strongly believe its flickr's fault.
 app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
 
     async.waterfall([
@@ -306,35 +306,29 @@ app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
         function(callback) {
             Image.findById(req.body.imgID, function(err, image) {
                 if (err) return callback(err, null);
-                // convert from base64 to bytes
                 callback(null, image.imgData);
             });
         },
         // push it to the flickr server
         function(imgData, callback) {
-             
-            /*var args = {
-                photo: new Buffer(imgData, 'base64'),
-                flickrConsumerKey: config.flickr.api_key,
-                flickrConsumerKeySecret: config.flickr.secret,
-                oauthToken: config.flickr.access_token,
-                oauthTokenSecret: config.flickr.access_token_secret,
-                callback: callback,
-                optionalArgs: {title: req.body.name}
-            };
 
-            flickr.uploadPhoto(args);*/
-
-            callback('failed to push image to fickr. '
-                + 'flickr-API just won\'t work.. i tried. hard. '
-                + '4 libraries later i give up. '
-                + 'don\'t even ask about geotags', null);
-            
+            flickr.upload(
+                new Buffer(imgData, 'base64'),
+                {
+                    title: req.body.name,
+                    description: 'uploaded via myJourneyJournal by Norwin Roosen',
+                },
+                function(err, photoId) {
+                    if (err) return callback(err, null);
+                    callback(null, photoId);
+                }
+            );
         }
     ], function(err, result) {
         if (err) {
-            console.error('Could not upload photo to flickr: ' + err);
-            res.writeHead(501, err, {'content-type' : 'text/plain'});
+            var message = 'Could not upload photo to flickr: ' + err;
+            console.error(message);
+            res.writeHead(501, message, {'content-type' : 'text/plain'});
             return res.send();
         }
         res.send('image pushed to flickr. flickr photoID: ' + result);
@@ -348,8 +342,8 @@ app.get('/getAnalytics*', function(req, res) {
     // if an ip is queried, filter by its value, else query all entries
     var query = req.query.ip ? {ip: req.query.ip} : {};
 
-    Analytics.find(query, function(error, analytics) {
-        if (error) return console.error(error);
+    Analytics.find(query, function(err, analytics) {
+        if (err) return res.send(err);
         res.json(analytics);
     });
 });
@@ -448,6 +442,6 @@ function addGeoTag(imgData, geoTag) {
         exifObj["GPS"][exif.GPSIFD.GPSLatitude]  = [lat, 1000000];
         exifObj["GPS"][exif.GPSIFD.GPSLongitude] = [lon, 1000000];
 
-        // add new exif data to image
+        // add new exif data to images
         return exif.insert(exif.dump(exifObj), imgData);
 }

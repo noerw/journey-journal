@@ -58,7 +58,12 @@ function newJourney() {
                         });
 
                     }, 'http://' + window.location.host + '/updateJourney', 'POST',
-                    new Journey(name, $('#descTxtArea').val()) );
+                        {
+                            name: name,
+                            description: $('#descTxtArea').val(),
+                            sections: []
+                        }
+                    );
                 }
             }
         },

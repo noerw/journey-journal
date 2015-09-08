@@ -79,7 +79,13 @@ function editLocation(popupElement) {
  * @param form DOM element of the new-section-form
  */
 function addSection(form) {
-    var section = new Section(form.inputTitle.value, form.inputDesc.value, form.inputDate.value);
+    var section = {
+	    name:        form.inputTitle.value || 'section title',
+	    description: form.inputDesc.value  || 'section description',
+	    date:        form.inputDate.value  || '2015-09-01',
+	    locations:   []
+    };
+    
     // add section to data
     journey.sections.push(section);
     form.reset();

@@ -6,6 +6,11 @@
 
 'use strict';
 
+
+// the local copy of the journey that is loaded/viewed/edited
+// value is filled in clientRouting.js#loadJourney() and journeyEdit.js#updateJourney()
+var journey = {};
+
 // load a journey depending on the url query upon startup
 // & add its content to the sidebar & map
 $(document).ready(function() {

@@ -107,6 +107,7 @@ app.use('/img', express.static(__dirname + '/webapp/img'));
 app.use('/css', express.static(__dirname + '/webapp/css'));
 app.use('/js',  express.static(__dirname + '/webapp/js'));
 app.use('/lib', express.static(__dirname + '/webapp/lib'));
+app.use('/favicon.ico', express.static(__dirname + '/webapp/img/favicon.ico'));
 
 // inserts an client side entry into Analytics
 app.post('/addAnalytics', urlEncodedParser, function(req, res) {

@@ -131,6 +131,9 @@ map.on('draw:created', function(e) {
             // check if an image was added
             if (lastImage.imgData !== '') {
 
+            	// add geoTag to the image, if the drawn object is a marker
+            	if (e.layerType === 'marker') lastImage.geoTag = geojson.geometry.coordinates;
+
                 // upload the image to the DB server
                 ajax(function(err, result) {
 
@@ -140,7 +143,7 @@ map.on('draw:created', function(e) {
 
                 }, 'http://' + window.location.host + '/addImage', 'POST', lastImage);
 
-                lastImage.imgData = ''; // clear lastImage data
+                lastImage = {}; // clear lastImage data
             } else {
                 callback(null, '');
             }
@@ -229,7 +232,7 @@ function updateJourney(callback) {
 
 
 // global object, buffering the last uploaded image
-var lastImage = { imgData: '' };
+var lastImage = {};
 
 /**
  * loads an image from a file input (called on change of the file input)

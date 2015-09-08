@@ -8,7 +8,7 @@
 
 /**
  * server configuration
- * logLevel: filter the action types, that should be logged (to DB & and on console)
+ * logLevel: filter the action types, that should be logged to DB & and on console
  *           valid values: 'SERVER-REQ', 'CLIENT-ACTION'
  */
 var config = {
@@ -27,6 +27,7 @@ var express    = require('express');
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var async      = require('async');
+var exif       = require('piexifjs');
 //var flickr      = require('flickr-oauth-and-upload');
 
 var app = express();
@@ -264,11 +265,18 @@ app.get('/removeJourney*', function(req, res) {
 
 
 // adds an image to the image schema
+// when lat/lon data is provided, add an geoTag
 app.post('/addImage', urlEncodedParser, function (req,res) {
+    
+    // if an geoTag is given, add it to the images exif data
+    var imageData;
+    if (req.body.geoTag) imageData = addGeoTag(req.body.imgData, req.body.geoTag);
+    else                 imageData = req.body.imgData;
+
     var id = req.body._id || new mongoose.mongo.ObjectID();
     Image.findByIdAndUpdate(
         id,
-        { imgData: req.body.imgData },
+        { imgData: imageData },
         { upsert: true, new: true },
         function(err, image) {
             if (err) return console.error(err);
@@ -405,4 +413,41 @@ function getImageIDs(journeyID, callback) {
 
         callback(null, imageIDs, journey);
     });
+}
+
+/**
+ * @desc   adds an EXIF geoTag to an image
+ * @param  imgData JPEG image as base64 or binary string
+ * @param  geoTag  Array of coordinates: [lon, lat]
+ * @return the image in the same encoding, with added exif data
+ */
+function addGeoTag(imgData, geoTag) {
+
+        // get exif data
+        var exifObj = exif.load(imgData);
+
+        // set geotag
+        // convert data format (*1kk, truncate decimals, positive!)
+        var lat = ~~(geoTag[1] * 1000000);
+        var lon = ~~(geoTag[0] * 1000000);
+
+        if (lat < 0) {
+            lat *= -1;
+            exifObj["GPS"][exif.GPSIFD.GPSLatitudeRef] = "S";
+        } else {
+            exifObj["GPS"][exif.GPSIFD.GPSLatitudeRef] = "N";
+        }
+
+        if (lon < 0) {
+            lon *= -1;
+            exifObj["GPS"][exif.GPSIFD.GPSLongitudeRef] = "W";
+        } else {
+            exifObj["GPS"][exif.GPSIFD.GPSLongitudeRef] = "E";
+        }
+
+        exifObj["GPS"][exif.GPSIFD.GPSLatitude]  = [lat, 1000000];
+        exifObj["GPS"][exif.GPSIFD.GPSLongitude] = [lon, 1000000];
+
+        // add new exif data to image
+        return exif.insert(exif.dump(exifObj), imgData);
 }

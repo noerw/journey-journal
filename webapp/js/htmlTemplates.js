@@ -70,7 +70,7 @@ function newLocationDialog(okCallback) {
                 + '  <label class="col-sm-3 control-label">Add Image:</label>'
                 + '  <div class="col-sm-3">'
                 + '    <span class="form-control btn btn-default btn-file"><i class="fa fa-file-image-o"></i> Browse'
-                + '    <input type="file" accept="image/*" onchange="addImage(event)"></span>'
+                + '    <input type="file" accept="image/jpeg" onchange="addImage(event)"></span>'
                 + '</div></div><br>',
                   okCallback
     );

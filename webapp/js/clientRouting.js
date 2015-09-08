@@ -94,8 +94,13 @@ sidebar.on('content', function(e) {
         async.each(section.locations, function(location, callback) {
             addLocation2Map(location, function() { callback (null); });
         }, function(err) {
-            //focus the map onto all locations
-            if (section.locations.length) map.fitBounds(drawnItems.getBounds());
+            //focus the map onto all locations, considering the offset by the sidebar
+            if (section.locations.length) {
+                map.fitBounds(drawnItems.getBounds(), {
+                    paddingTopLeft:     [600, 40],
+                    paddingBottomRight: [0, 20]
+                });
+            }
         })
 
         // init the draw control with the sections locations

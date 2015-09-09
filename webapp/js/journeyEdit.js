@@ -247,10 +247,39 @@ function addImage(event) {
     };
 }
 
+/**
+ * @desc removes the opened journey from the database and returns to the startpage
+ */
 function removeJourney() {
     ajax(function(err, result) {
         logToDB('journey deleted: ' + journey._id, function() {
             window.location = 'http://' + window.location.host;
         });
     }, 'http://' + window.location.host + '/removeJourney?id=' + journey._id);
+}
+
+/**
+ * @desc removes the current section
+ */
+function removeSection() {
+	var id = window.location.hash.slice(1);
+
+    for (var i = 0; i < journey.sections.length; i++) {
+        if (journey.sections[i]._id === id) {
+			
+			// remove in sidebar
+			sidebar.removePanel(id);
+			// remove in local journey
+        	journey.sections.splice(i, 1);
+			// update DB
+			updateJourney();
+			logToDB('section deleted: ' + id);
+
+			// open overview tab & update URL hash
+			window.location.hash = '#overview';
+			sidebar.open('overview');
+
+			return;
+        }
+    }
 }

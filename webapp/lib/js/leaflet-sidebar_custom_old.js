@@ -146,6 +146,19 @@ L.Control.Sidebar = L.Control.extend({
         this._tabitems.push(tabHTML);
         contentHTML._sidebar = this;
         this._panes.push(contentHTML);
+    },
+
+    removePanel: function(id) {
+        // find the panel by ID
+        for (var i = 0; i < this._panes.length; i++) {
+            if (this._panes[i].id == id) {
+                // remove both tab and panel, assuming they have the same index!
+                this._panes[i].remove();
+                this._panes.slice(i, 1);
+                this._tabitems[i].remove();
+                this._tabitems.slice(i, 1);
+            }
+        }
     }
 });
 

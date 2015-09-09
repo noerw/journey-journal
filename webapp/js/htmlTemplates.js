@@ -14,7 +14,9 @@ function sbarPanel(name, description, date, id) {
     return ('<h1 id="sec-title-' + id + '">%NAME%</h1><p>%DATE%</p><br>'
         +  '<p id="sec-desc-' + id + '">%DESC%</p>'
         +  '<button class="btn btn-default btn-sm" onclick="editSection()">'
-        +  '<i class="fa fa-edit"></i> edit</button>')
+        +  '<i class="fa fa-edit"></i> edit</button> '
+        +  '<button class="btn btn-default btn-sm" onclick="removeSection()">'
+        +  '<i class="fa fa-trash-o"></i> delete</button>')
         .replace('%NAME%', name)
         .replace('%DESC%', description.replace(/\n/g, '<br>'))
         .replace('%DATE%', 'Date: ' + date.slice(0,10));

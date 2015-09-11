@@ -106,6 +106,47 @@ function addSection(form) {
 }
 
 /**
+ * @desc removes the opened journey from the database and returns to the startpage
+ */
+function removeJourney() {
+	bootbox.confirm('Are you sure you wan\'t to delete this journey?', function(ok){
+		if (ok) {
+		    ajax(function(err, result) {
+		        logToDB('journey deleted: ' + journey._id, function() {
+		            window.location = 'http://' + window.location.host;
+		        });
+		    }, 'http://' + window.location.host + '/removeJourney?id=' + journey._id);
+		}
+	});
+}
+
+/**
+ * @desc removes the current section
+ */
+function removeSection() {
+	var id = window.location.hash.slice(1);
+
+    for (var i = 0; i < journey.sections.length; i++) {
+        if (journey.sections[i]._id === id) {
+			
+			// remove in sidebar
+			sidebar.removePanel(id);
+			// remove in local journey
+        	journey.sections.splice(i, 1);
+			// update DB
+			updateJourney();
+			logToDB('section deleted: ' + id);
+
+			// open overview tab & update URL hash
+			window.location.hash = '#overview';
+			sidebar.open('overview');
+
+			return;
+        }
+    }
+}
+
+/**
  * @desc  save a drawn layer to the current section of the journey, when it was created.
  *        rather complex, as we first need to upload the image & get its ID back, then
  *        add the location & get it's ID back, create the popup & then add it to the map.
@@ -129,9 +170,10 @@ map.on('draw:created', function(e) {
         // upload image, if one was chosen
         function(callback) {
             // check if an image was added
-            if (lastImage.imgData !== '') {
+            if (lastImage.imgData) {
 
             	// add geoTag to the image, if the drawn object is a marker
+                // the geoTag will be written into the images EXIF on serverside then
             	if (e.layerType === 'marker') lastImage.geoTag = geojson.geometry.coordinates;
 
                 // upload the image to the DB server
@@ -245,41 +287,4 @@ function addImage(event) {
     reader.onload = function(){
         lastImage.imgData = reader.result;
     };
-}
-
-/**
- * @desc removes the opened journey from the database and returns to the startpage
- */
-function removeJourney() {
-    ajax(function(err, result) {
-        logToDB('journey deleted: ' + journey._id, function() {
-            window.location = 'http://' + window.location.host;
-        });
-    }, 'http://' + window.location.host + '/removeJourney?id=' + journey._id);
-}
-
-/**
- * @desc removes the current section
- */
-function removeSection() {
-	var id = window.location.hash.slice(1);
-
-    for (var i = 0; i < journey.sections.length; i++) {
-        if (journey.sections[i]._id === id) {
-			
-			// remove in sidebar
-			sidebar.removePanel(id);
-			// remove in local journey
-        	journey.sections.splice(i, 1);
-			// update DB
-			updateJourney();
-			logToDB('section deleted: ' + id);
-
-			// open overview tab & update URL hash
-			window.location.hash = '#overview';
-			sidebar.open('overview');
-
-			return;
-        }
-    }
 }

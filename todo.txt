@@ -1,8 +1,0 @@
-- rollout
-  - change DB name
-  - readme (install, config, run, libraries, license, names?)
-  - github push
-  
-- close button on sidebar 
-  - update sidebar
-    - rework addPanel()

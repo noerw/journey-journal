@@ -94,12 +94,17 @@ sidebar.on('content', function(e) {
         async.each(section.locations, function(location, callback) {
             addLocation2Map(location, function() { callback (null); });
         }, function(err) {
-            //focus the map onto all locations, considering the offset by the sidebar
+            //focus the map onto all locations
             if (section.locations.length) {
-                map.fitBounds(drawnItems.getBounds(), {
-                    paddingTopLeft:     [600, 40],
-                    paddingBottomRight: [0, 20]
-                });
+
+                // if the width of the page is >768px (sidebar is not fullpage),
+                // consider the offset by the sidebar in the mapzoom
+                var focusOptions = {};
+                if ($(document).width() >= 768) {
+                    focusOptions.paddingTopLeft = [600, 40];
+                    focusOptions.paddingBottomRight = [0, 20];
+                }
+                map.fitBounds(drawnItems.getBounds(), focusOptions);
             }
         })
 

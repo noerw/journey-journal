@@ -17,12 +17,11 @@ var config = {
     dbName:    'myJourneyJournal',
     logLevel:  ['SERVER-REQ', 'CLIENT-ACTION'],
     flickr: {
-        api_key:      'fad8fb42e90ba69fda91a88df6a84738',
-        api_secret:       'b5daeed895156293',
-        permissions:  'write',
+        api_key:     'fad8fb42e90ba69fda91a88df6a84738',
+        api_secret:  'b5daeed895156293',
 
         // credentials to use the app with flickr-account 'geosoft12015'
-        // https://www.flickr.com/photos/134840879@N03/
+        // see https://www.flickr.com/photos/134840879@N03/
         // bad idea hardcoding this, but as this is a shared account anyway...
         user_id:      '134840879@N03',
         access_token: '72157658293334096-e41e92696ccd564d',
@@ -100,7 +99,6 @@ database.once('open', function (callback) {
 });
 
 
-
 /* http routing */
 // serve static content
 app.use('/img', express.static(__dirname + '/webapp/img'));
@@ -114,14 +112,10 @@ app.post('/addAnalytics', urlEncodedParser, function(req, res) {
     res.send(logToAnalytics(req.ip, req.body.action, 'CLIENT-ACTION'));
 });
 
-
-// code which is executed on every (non static) request
+// executed on every request, that is has no route defined, or is routed below this function
 app.use(function(req, res, next) {
     // log requests in analytics schema
     logToAnalytics(req.ip, req.method + ' ' + req.url, 'SERVER-REQ');
-
-    // allow CORS
-    //res.header('Access-Control-Allow-Origin', '*');
     next();
 });
 
@@ -173,8 +167,8 @@ app.post('/updateJourney', urlEncodedParser, function(req, res) {
 // returns the journey and its images with the given id in the query
 // returned document structure: {journey: {}, images: [] }, journey without _id
 app.get('/exportJourney*', function(req, res) {
+    // if an id is given in the URL query, execute the following async funtions in series
     if(req.query.id) {
-        // if an id is given in the URL query, execute the following async funtions in series
         async.waterfall( [
 
             // find the used imageIDs
@@ -208,18 +202,19 @@ app.get('/exportJourney*', function(req, res) {
             var exportJourney = { journey: journey, images: images };
 
             res.setHeader('Content-disposition', 'attachment; filename=journey_' 
-                + exportJourney.journey.name.split(' ').join('_').substring(0, 26) + '.json');
+                + exportJourney.journey.name.split(' ').join('_').substring(0, 30) + '.json');
             res.setHeader('Content-type', 'application/json');
             res.send(JSON.stringify(exportJourney, null, 2));
         });
+
     } else {
         res.send('specify a journey ID as in /exportJourney?id=myID')
     }
 });
 
 app.get('/removeJourney*', function(req, res) {
+    // if an id is given in the URL query, execute the following async funtions in series
     if(req.query.id) {
-        // if an id is given in the URL query, execute the following async funtions in series
         async.waterfall( [
 
             // find the used imageIDs
@@ -257,11 +252,11 @@ app.get('/removeJourney*', function(req, res) {
             if (err) return console.error(err);
             res.send('journey was deleted from DB');
         });
+
     } else {
-        res.send('specify a journey ID as in /exportJourney?id=myID')
+        res.send('specify a journey ID as in /removeJourney?id=myID')
     }
 });
-
 
 // adds an image to the image schema
 // when lat/lon data is provided, add an geoTag
@@ -298,7 +293,7 @@ app.get('/getImage*', function(req, res) {
 
 // uploads an image to the flickr account specified in config.flickr
 // DOES NOT WORK, flickr always responds 'Filetype not recognized'.
-// i tried 6 libraries and various encodings, and now strongly believe its flickr's fault.
+// i tried 6 libraries and various image encodings, and now strongly believe its flickr's fault.
 app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
 
     async.waterfall([
@@ -366,14 +361,16 @@ function logToAnalytics(ip, action, type) {
             timestamp: new Date()
         });
 
-        analytic.save(function(error){
-            if(error) {
-                console.log('failed to save analytic from ' + ip +': ' + error);
+        analytic.save(function(err){
+            if(err) {
+                console.error('failed to save analytic from ' + ip +':', err);
             } else {
-                console.log(analytic.timestamp + '   '
-                            + analytic.ip + '\t'
-                            + analytic.type + '\t'
-                            + analytic.action);
+                console.log(
+                    analytic.timestamp + '   '
+                    + analytic.ip + '\t'
+                    + analytic.type + '\t'
+                    + analytic.action
+                );
             }
         });
 
@@ -442,6 +439,6 @@ function addGeoTag(imgData, geoTag) {
         exifObj["GPS"][exif.GPSIFD.GPSLatitude]  = [lat, 1000000];
         exifObj["GPS"][exif.GPSIFD.GPSLongitude] = [lon, 1000000];
 
-        // add new exif data to images
+        // add new EXIF data to images & return image with new EXIF
         return exif.insert(exif.dump(exifObj), imgData);
 }

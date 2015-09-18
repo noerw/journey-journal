@@ -1,7 +1,5 @@
 /**
 * @desc   http & database server for the webapp
-* @author Norwin Roosen
-* @date   150822
 */
 
 'use strict';

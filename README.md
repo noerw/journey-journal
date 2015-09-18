@@ -5,16 +5,16 @@ It was created in Sep 2015 as the final submission for a university course.
 The application is stable and runs on node and mongoDB.
 
 ## functionality
+* single page viewing & editing of a journey
+    * direct access to journeys & features via the browser URL
 * persistent storage of multiple journeys
     * import & export from/to file
-* single page viewing & editing of a journey
 * mapping geo-features on an interactive map
 * storing images for each geo-feature
-    * automatically geotagging them in EXIF data
+    * automatically geotag them in EXIF data
     * pushing images to a flickr account
         * **doesn't work atm** (broken flickr-API?)  
 * logging user-interactions to database
-
 
 ## dependencies
 * mongoDB v2.4.9

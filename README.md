@@ -1,6 +1,6 @@
 # my journey journal
 
-This is a web-app diary for holiday-trips with mapping functionality.
+This is a webapp diary for holiday-trips with mapping functionality.
 It was created in Sep 2015 as the final submission for a university course.
 The application is stable and runs on node and mongoDB.
 
@@ -29,6 +29,9 @@ To start the server enter `npm start`, and the server should listen on `localhos
 ## configure
 You can configure the server by editing the `config` variable in `server.js#l14`.
 
-* **loglevel**: determines which kind of interaction is logged in the console and to the database. You may select clientside interactions with `'CLIENT-ACTION'`, and/or server requests with `'SERVER-REQ'`.
-* **flickr**: API-key and account tokens for the flickr integration.
+* **loglevel**: determines which kind of interaction is logged in the console and to the database. You may select clientside interactions with `'CLIENT-ACTION'`, and/or server requests with `'SERVER-REQ'`
+* **flickr**: API-key and account tokens for the flickr integration
 * everything else in that object should be selfexplanatory
+
+## license
+This software is licensed under GNU-2.0.

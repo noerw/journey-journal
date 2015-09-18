@@ -311,7 +311,7 @@ app.post('/imageToFlickr', urlEncodedParser, function(req, res) {
                 new Buffer(imgData, 'base64'),
                 {
                     title: req.body.name,
-                    description: 'uploaded via myJourneyJournal by Norwin Roosen',
+                    description: 'uploaded via myJourneyJournal',
                 },
                 function(err, photoId) {
                     if (err) return callback(err, null);

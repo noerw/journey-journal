@@ -1,7 +1,5 @@
 /**  
-* @desc   misc (helper-) functions
-* @author Norwin Roosen
-* @date   150822
+* @desc misc (helper-) functions
 */
 
 'use strict';

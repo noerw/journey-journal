@@ -1,7 +1,5 @@
 /**  
-* @desc   HTML templates for elements that are often reused
-* @author Norwin Roosen
-* @date   150822
+* @desc HTML templates for elements that are often reused
 */
 
 'use strict';

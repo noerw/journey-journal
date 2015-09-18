@@ -1,7 +1,5 @@
 /**  
-* @desc   creates a map in the HTML document using leaflet
-* @author Norwin Roosen
-* @date   150822
+* @desc creates a map in the HTML document using leaflet
 */
 
 'use strict';

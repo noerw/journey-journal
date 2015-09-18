@@ -1,7 +1,5 @@
 /**  
 * @desc   provides routing on the clientside, allowing permalinks and stuff
-* @author Norwin Roosen
-* @date   150822
 */
 
 'use strict';

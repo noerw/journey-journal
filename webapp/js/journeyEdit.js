@@ -1,7 +1,5 @@
 /**  
-* @desc   functions for editing the journey & saving changes to the database
-* @author Norwin Roosen
-* @date   150822
+* @desc functions for editing the journey & saving changes to the database
 */
 
 'use strict';

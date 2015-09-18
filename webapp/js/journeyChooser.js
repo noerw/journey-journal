@@ -1,7 +1,5 @@
 /**  
-* @desc   gets all stored journeys and lets the user select, import, or create a new one
-* @author Norwin Roosen
-* @date   150822
+* @desc gets all stored journeys and lets the user select, import, or create a new one
 */
 
 'use strict';

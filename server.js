@@ -68,7 +68,7 @@ var Journey = mongoose.model('Journey', journeySchema);
 var imageSchema = mongoose.Schema({
     imgData:    String // image encoded as base64 string
 });
-var Image = mongoose.model('Images', imageSchema)
+var Image = mongoose.model('Images', imageSchema);
 
 
 /* database schema for analytics */
@@ -89,7 +89,7 @@ var database = mongoose.connection;
 database.on('error', console.error.bind(console, 'ABORTING. database connection error:'));
 
 // once db connection is open, start http server
-database.once('open', function (callback) {
+database.once('open', function () {
     console.log('connection to database established on port ' + config.mongoPort);
     app.listen(config.httpPort, function(){
         console.log('http server now listening on port ' + config.httpPort);
@@ -128,7 +128,7 @@ app.get('/getJourney*', function(req, res) {
             res.json(journey);
         });
     } else {
-        res.send('specify a journey ID as in /getJourney?id=myID')
+        res.send('specify a journey ID as in /getJourney?id=myID');
     }
 });
 
@@ -199,14 +199,14 @@ app.get('/exportJourney*', function(req, res) {
 
             var exportJourney = { journey: journey, images: images };
 
-            res.setHeader('Content-disposition', 'attachment; filename=journey_' 
-                + exportJourney.journey.name.split(' ').join('_').substring(0, 30) + '.json');
+            res.setHeader('Content-disposition', 'attachment; filename=journey_' +
+                exportJourney.journey.name.split(' ').join('_').substring(0, 30) + '.json');
             res.setHeader('Content-type', 'application/json');
             res.send(JSON.stringify(exportJourney, null, 2));
         });
 
     } else {
-        res.send('specify a journey ID as in /exportJourney?id=myID')
+        res.send('specify a journey ID as in /exportJourney?id=myID');
     }
 });
 
@@ -252,7 +252,7 @@ app.get('/removeJourney*', function(req, res) {
         });
 
     } else {
-        res.send('specify a journey ID as in /removeJourney?id=myID')
+        res.send('specify a journey ID as in /removeJourney?id=myID');
     }
 });
 
@@ -285,7 +285,7 @@ app.get('/getImage*', function(req, res) {
             res.json(image);
         });
     } else {
-        res.send('specify an image ID as in /getImage?id=myID')
+        res.send('specify an image ID as in /getImage?id=myID');
     }
 });
 
@@ -364,10 +364,10 @@ function logToAnalytics(ip, action, type) {
                 console.error('failed to save analytic from ' + ip +':', err);
             } else {
                 console.log(
-                    analytic.timestamp + '   '
-                    + analytic.ip + '\t'
-                    + analytic.type + '\t'
-                    + analytic.action
+                    analytic.timestamp + '   ' +
+                    analytic.ip + '\t' +
+                    analytic.type + '\t' +
+                    analytic.action
                 );
             }
         });
@@ -396,7 +396,7 @@ function getImageIDs(journeyID, callback) {
             var section = journey.sections[i];
             for (var k = 0; k < section.locations.length; k++) {
                 var imageID = section.locations[k].properties.imgID;
-                if (imageID != '') imageIDs.push(imageID);
+                if (imageID !== '') imageIDs.push(imageID);
             }
         }
 
@@ -422,20 +422,20 @@ function addGeoTag(imgData, geoTag) {
 
         if (lat < 0) {
             lat *= -1;
-            exifObj["GPS"][exif.GPSIFD.GPSLatitudeRef] = "S";
+            exifObj.GPS[exif.GPSIFD.GPSLatitudeRef] = "S";
         } else {
-            exifObj["GPS"][exif.GPSIFD.GPSLatitudeRef] = "N";
+            exifObj.GPS[exif.GPSIFD.GPSLatitudeRef] = "N";
         }
 
         if (lon < 0) {
             lon *= -1;
-            exifObj["GPS"][exif.GPSIFD.GPSLongitudeRef] = "W";
+            exifObj.GPS[exif.GPSIFD.GPSLongitudeRef] = "W";
         } else {
-            exifObj["GPS"][exif.GPSIFD.GPSLongitudeRef] = "E";
+            exifObj.GPS[exif.GPSIFD.GPSLongitudeRef] = "E";
         }
 
-        exifObj["GPS"][exif.GPSIFD.GPSLatitude]  = [lat, 1000000];
-        exifObj["GPS"][exif.GPSIFD.GPSLongitude] = [lon, 1000000];
+        exifObj.GPS[exif.GPSIFD.GPSLatitude]  = [lat, 1000000];
+        exifObj.GPS[exif.GPSIFD.GPSLongitude] = [lon, 1000000];
 
         // add new EXIF data to images & return image with new EXIF
         return exif.insert(exif.dump(exifObj), imgData);

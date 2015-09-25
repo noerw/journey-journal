@@ -24,8 +24,9 @@ var config = {
         user_id:      '134840879@N03',
         access_token: '72157658293334096-e41e92696ccd564d',
         access_token_secret: '014ca6d28798d425'
-    }
-}
+    },
+    browserOnStartup: true // open the app in the browser, when the server started
+};
 
 var express    = require('express');
 var bodyParser = require('body-parser');
@@ -33,6 +34,7 @@ var mongoose   = require('mongoose');
 var async      = require('async');
 var exif       = require('piexifjs');
 var flickr     = require('flickr-upload')(config.flickr);
+var open       = require('open');
 
 var app = express();
 
@@ -93,6 +95,7 @@ database.once('open', function () {
     console.log('connection to database established on port ' + config.mongoPort);
     app.listen(config.httpPort, function(){
         console.log('http server now listening on port ' + config.httpPort);
+        if (config.browserOnStartup) open('http://localhost:' + config.httpPort);
     });
 });
 

@@ -1,6 +1,11 @@
 {
   "name": "my-journey-journal",
-  "keywords": ["diary", "map", "flickr", "mongoDB"],
+  "keywords": [
+    "diary",
+    "map",
+    "flickr",
+    "mongoDB"
+  ],
   "version": "0.1.0",
   "repository": {
     "type": "git",
@@ -13,7 +18,8 @@
     "body-parser": "~1.13.1",
     "async": "~1.4.2",
     "piexifjs": "~1.0.0",
-    "flickr-upload": "~1.0.0"
+    "flickr-upload": "~1.0.0",
+    "open": "0.0.5"
   },
   "license": "GNU-3.0"
 }

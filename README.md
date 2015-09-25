@@ -6,15 +6,15 @@ The application is stable and runs on node and mongoDB.
 
 ## functionality
 * single page viewing & editing of a journey
-    * direct access to journeys & features via the browser URL
+    * direct access to journeys & features by URL
 * persistent storage of multiple journeys
     * import & export from/to file
-* mapping geo-features on an interactive map
-* storing images for each geo-feature
+* map geo-features on an interactive map
+* store images for each geo-feature
     * automatically geotag them in EXIF data
-    * pushing images to a flickr account
+    * push images to a flickr account
         * **doesn't work atm** (broken flickr-API?)  
-* logging user-interactions to database
+* log user-interactions to database
 
 ## dependencies
 * mongoDB v2.4.9
@@ -24,10 +24,10 @@ The application is stable and runs on node and mongoDB.
 Before the first run, make shure you have nodeJS, npm and mongoDB installed on your machine.
 Then install all npm dependencies by calling `sudo npm install` in the apps root directory.
 
-To start the server enter `npm start`, and the server should listen on `localhost:8080/`.
+To start the server, make shure you mongoDB-server is running; then enter `npm start`. The webserver should then be listening on `localhost:8080/`.
 
 ## configure
-You can configure the server by editing the `config` variable in `server.js#l14`.
+You can configure the server by editing the `config` variable in `server.js#l12`.
 
 * **loglevel**: determines which kind of interaction is logged in the console and to the database. You may select clientside interactions with `'CLIENT-ACTION'`, and/or server requests with `'SERVER-REQ'`
 * **flickr**: API-key and account tokens for the flickr integration
